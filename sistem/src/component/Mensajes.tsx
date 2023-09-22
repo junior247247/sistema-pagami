@@ -3,6 +3,11 @@ import { context } from '../hooks/AppContext'
 import { collection, getFirestore, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { app } from '../Firebase/conexion';
 import { RowChat } from './RowChat';
+
+import { Modal, ModalBody, ModalDialog } from 'react-bootstrap';
+import Spinner from 'react-bootstrap/Spinner';
+import { Indicators } from './indicator/Indicators';
+
 interface Chat {
   idUser1: string;
   idUser2: string;
@@ -67,6 +72,7 @@ export const Mensajes = () => {
 
 
 
+
         <table className="table table-dark table-hover ">
           <thead>
             <tr>
@@ -93,25 +99,7 @@ export const Mensajes = () => {
 
 
       </div>
-
-
-      <div className="d-flex justify-content-center">
       
-        <div className="spinner-border spinner-border-lg" role="status">
-          <p>asd</p>
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-
-      <div className="progress" style={{ height: '20px' }}>
-        <div className="progress-bar" role="progressbar" style={{ width: '10%' }} aria-valuenow={25} aria-valuemin={0} aria-valuemax={100}></div>
-      </div>
-      <div className="modal">
-        <div className="modal-dialog modal-lg " role="document">
-
-        </div>
-      </div>
-
 
     </div>
   )

@@ -40,7 +40,8 @@ const Init: Caracteristicas = {
   cliente: '',
   fecha: new Date(212311231),
   description: "",
-  observacion: ''
+  observacion: '',
+  subestado: ''
 
 
 }
@@ -51,7 +52,7 @@ export const Historial = () => {
   const [CaracteristicasState, setCaracteristicas] = useState<Caracteristicas>(Init);
 
   const [Isvisible, setIsvisible] = useState<IsView>({ id: '', isVisible: false })
-
+  const [ImagenTitulo, setImagenTitulo] = useState({ img: '', titulo: '' })
 
   const getData = async (id: string) => {
 
@@ -93,7 +94,8 @@ export const Historial = () => {
       cliente: resp.get('name'),
       fecha: new Date(resp.get('timestamp')),
       observacion: resp.get('observacion'),
-      description: resp.get('description')
+      description: resp.get('description'),
+      subestado: resp.get('subestado')
 
     }
 
@@ -122,8 +124,10 @@ export const Historial = () => {
           equipo: resp.get('equipo'),
           serial: resp.get('serial'),
           estado: resp.get('estado'),
-          noFact: resp.get("noFact className='text-mobile' "),
-          img: resp.get('fileUri')
+          noFact: resp.get("noFact"),
+          img: resp.get('fileUri'),
+          subestado: resp.get('subestado')
+
         }
       })
 
@@ -137,7 +141,7 @@ export const Historial = () => {
     <div>
 
       <div className="container-fluid  align-items-center mt-3 mb-3">
-      
+
         <div className="row  ">
 
           <div className="col-sm-6 col-md-4">
@@ -167,7 +171,7 @@ export const Historial = () => {
         <table className="table  table-dark table-hover ">
           <thead>
             <tr>
-            <th className='text-mobile text-table  table-desk-header' scope="col"></th>
+              <th className='text-mobile text-table  table-desk-header' scope="col"></th>
               <th className='text-mobile text-table  table-desk-header' scope="col">Nombre</th>
               <th className='text-mobile text-table  table-desk-header' scope="col">Identificacion</th>
               <th className='text-mobile text-table  table-desk-header' scope="col" colSpan={0} >Equipo</th>
@@ -179,7 +183,7 @@ export const Historial = () => {
               <th className='text-mobile text-table  table-desk-header' scope="col">Repuesto</th>
               <th className='text-mobile text-table  table-desk-header' scope="col">Total</th>
               <th className='text-mobile text-table table-desk-header' scope="col">Correo</th>
-              <th className='text-mobile text-table table-desk-header' scope="col">Reporte</th>
+              <th className='text-mobile text-table table-desk-header' scope="col">Estado</th>
 
             </tr>
           </thead>
@@ -187,11 +191,11 @@ export const Historial = () => {
             {
               Data.map((resp, index) => (
                 <tr key={index}>
-                       <th className='text-mobile text-table table-desk-header' scope="row">
+                  <th className='text-mobile text-table table-desk-header' scope="row">
 
-                       <img width={50}  className ={(resp.img) && 'img-thumbnail'} src={resp.img} />
-                       </th>
-                
+                    <img width={50} onClick={() => setImagenTitulo({ titulo: resp.equipo, img: resp.img })} data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" className={(resp.img) && 'img-thumbnail pointer'} src={resp.img} />
+                  </th>
+
                   <th className='text-mobile text-table table-desk-header' scope="row">{(resp.name) ? resp.name.toUpperCase() : ''}</th>
                   <td className='text-mobile text-table table-desk-header'>{resp.identiifcation}</td>
                   <td className='text-mobile text-table table-desk-header'  >{resp.equipo}</td>
@@ -202,7 +206,7 @@ export const Historial = () => {
                   <td className='text-mobile text-table table-desk-header'>{resp.costoRepuesto}</td>
                   <td className='text-mobile text-table table-desk-header'>{resp.total}</td>
                   <td className='text-mobile text-table table-desk-header'>{resp.correo}</td>
-                  <td><a className='btn btn-success' data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" onClick={() => setIsvisible({ id: resp.id, isVisible: true })} >Imprimir</a></td>
+                  <td><a className={(resp.subestado == 'reparado') ? 'btn btn-success' : 'btn-danger btn'} data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" onClick={() => setIsvisible({ id: resp.id, isVisible: true })} >{resp.subestado}</a></td>
                 </tr>
 
               ))
@@ -216,14 +220,14 @@ export const Historial = () => {
 
 
 
-      <div className="modal fade " id="exampleModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div className="modal fade " id="exampleModals" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 
         <div className="modal-dialog modal-lg" role="document">
 
           <div className="modal-content ">
 
             <div className="modal-header">
-              <h5 className="modal-title" id="exampleModal">Reporte</h5>
+              <h5 className="modal-title" id="exampleModals">Reporte</h5>
               <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -239,7 +243,7 @@ export const Historial = () => {
                   >
 
 
-                
+
 
 
 
@@ -252,6 +256,27 @@ export const Historial = () => {
 
 
       </div>
+
+
+      <div className="modal fade" id="exampleModal" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg " role="document">
+          <div className="modal-content ">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">{(ImagenTitulo.titulo) && ImagenTitulo.titulo.toUpperCase()}</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <img className='img-thumbnail' src={ImagenTitulo.img} />
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
 
 
 

@@ -1,4 +1,4 @@
-import { addDoc, getFirestore, collection, onSnapshot, query, orderBy, getDoc, doc, where, updateDoc } from 'firebase/firestore';
+import { addDoc, getFirestore, collection, onSnapshot, query, orderBy, getDoc, doc, where, updateDoc,setDoc } from 'firebase/firestore';
 import React, { useEffect, useContext, useState } from 'react'
 import { app } from '../Firebase/conexion';
 import { context } from '../hooks/AppContext'
@@ -153,7 +153,7 @@ const getFile = async (files: FileList): Promise<fileImg> => {
                 idLocal: data.id,
                 nameLocal: data.get('name'),
                 total: resp.get('money'),
-                img:resp.get('img'),
+                img:res.get('img'),
                 cargo:resp.get('cargo'),
                 talento:resp.get('talento')
 
@@ -249,7 +249,7 @@ const getFile = async (files: FileList): Promise<fileImg> => {
     const coll = collection(db, 'Tecnicos');
     if(file){
       const foto= await getFile(file)
-      addDoc(coll, {
+   const res=await   addDoc(coll, {
         id,
         name,
         timestamp: new Date().getTime(),
@@ -258,8 +258,14 @@ const getFile = async (files: FileList): Promise<fileImg> => {
         talento:talento,
         cargo:cargo
       })
+      
+      setDoc(doc(db, 'DineroTecnico', res.id!), {
+        idLocal: SelectLocal.idLocal,
+        money: 0
+    })
+
     }else{
-      addDoc(coll, {
+      const res=await  addDoc(coll, {
         id,
         name,
         timestamp: new Date().getTime(),
@@ -268,6 +274,11 @@ const getFile = async (files: FileList): Promise<fileImg> => {
         talento:talento,
         cargo
       })
+
+      setDoc(doc(db, 'DineroTecnico', res.id!), {
+        idLocal: SelectLocal.idLocal,
+        money: 0
+    })
     }
 
   }

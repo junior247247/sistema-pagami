@@ -5,6 +5,7 @@ import { app } from '../Firebase/conexion';
 import { context } from '../hooks/AppContext'
 import { useForm } from '../hooks/useForm';
 import { async } from '@firebase/util';
+import { Indicators } from './indicator/Indicators';
 
 
 
@@ -19,7 +20,7 @@ export const Local = () => {
   const { onChange, state: { idLoca }, login } = useContext(context);
   const [Local, setLocal] = useState<Local[]>([]);
   const { name, email, pass, passConfirm, clear, onChange: onChangeForm } = useForm({ name: '', email: '', pass: '', passConfirm: '' });
-
+  const [IsLoading, setIsLoading] = useState(false)
   const [Name, setName] = useState('')
   const [Email, setEmail] = useState('')
 
@@ -33,11 +34,13 @@ export const Local = () => {
   const create = async () => {
     if (name == '' && pass == '' && passConfirm == '' && email == '') return alert('Debes ingresar el nombre');
     if (pass != passConfirm) return alert('Las contraseñas no coinciden');
+    setIsLoading(true)
     const db = getFirestore(app);
     const coll = collection(db, 'Local');
 
 
     const auth = getAuth(app);
+
     const resp = await createUserWithEmailAndPassword(auth, email, pass);
     setDoc(doc(db,'Users',resp.user.uid),{
       name,
@@ -51,7 +54,7 @@ export const Local = () => {
       timestamp: new Date().getTime(),
       idLocal: resp.user.uid
     })
-  
+    setIsLoading(false)
     clear()
 
   }
@@ -112,15 +115,15 @@ export const Local = () => {
 
   return (
     <div className='container-fluid'>
-      <div className="container  mt-3 ml-4 ">
+      <div className="container  mt-3 ml-0 ">
 
 
     
 
 
         <div className="row mt-3">
-          <div className="col">
-            <div className="from-group row ">
+          <div className="col-1">
+            <div className="form-group row ">
               <button  className='btn btn-outline-light' data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Nuevo</button>
             </div>
           </div>
@@ -195,11 +198,16 @@ export const Local = () => {
                             </form>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" onClick={()=>create()} className="btn btn-primary"  data-dismiss="modal">Guardar</button>
+                            <button type="button" onClick={()=>create()} className="btn btn-primary"   data-dismiss={ (name && email  && pass && passConfirm ) && "modal"} aria-label="Close">Guardar</button>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+            {
+              (IsLoading) && <Indicators/>
+            }
 
     </div>
   )

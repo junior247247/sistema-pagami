@@ -1,17 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { context } from '../hooks/AppContext'
-/*import ReactPDF, {
-  Document,
-  Page,
-  View,
-  Text,
-  Link,
-  Font,
-  StyleSheet,
-  PDFViewer
-} from '@react-pdf/renderer';*/
-//import { Reporte } from './Reporte';
+
 import { getFirestore, collection, orderBy, where, onSnapshot, query, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { app } from '../Firebase/conexion';
 import { Entrada } from '../entidades/Entrada';
@@ -31,7 +21,7 @@ export const Salida = () => {
   const [IsVisible, setIsVisible] = useState({ id: '', isVisible: false, idTecnico: '' })
   const [ImagenTitulo, setImagenTitulo] = useState({ img: '', titulo: '' })
 
-  const retirar = async (id: string) => {
+  const noReparado = async (id: string) => {
     const db = getFirestore(app);
     const coll = collection(db, 'Entrada');
     const document = doc(coll, id);
@@ -43,8 +33,60 @@ export const Salida = () => {
 
     const costoReparacion = res.get('costoReparacion')
     updateDoc(document, {
-      estado: 'Retirado'
+      estado: 'Retirado',
+      subestado: 'no reparado'
     })
+
+
+    setIsVisible({ isVisible: false, id: '', idTecnico: '' })
+
+    const collTecDinero = collection(db, 'DineroTecnico');
+    const documentTec = doc(collTecDinero, IsVisible.idTecnico);
+    const resolve = getDoc(documentTec);
+    const respTec = await resolve;
+    if (respTec.exists()) {
+
+      let money: number = respTec.get('money');
+      money += Number(costoReparacion);
+      updateDoc(documentTec, {
+        money
+      })
+    } else {
+
+
+      setDoc(doc(db, 'DineroTecnico', IsVisible.idTecnico!), {
+        idLocal: idLoca,
+        money: costoReparacion
+      })
+
+    }
+
+
+
+
+
+
+  }
+
+
+
+  const Reparado = async (id: string) => {
+    const db = getFirestore(app);
+    const coll = collection(db, 'Entrada');
+    const document = doc(coll, id);
+
+
+    const respDoc = getDoc(document);
+
+    const res = await respDoc;
+
+    const costoReparacion = res.get('costoReparacion')
+    updateDoc(document, {
+      estado: 'Retirado',
+      subestado: 'reparado'
+    })
+
+
     setIsVisible({ isVisible: false, id: '', idTecnico: '' })
 
     const collTecDinero = collection(db, 'DineroTecnico');
@@ -97,7 +139,9 @@ export const Salida = () => {
           serial: resp.get('serial'),
           estado: resp.get('estado'),
           noFact: resp.get('noFact'),
-          img: resp.get('fileUri')
+          img: resp.get('fileUri'),
+          subestado: resp.get('subestado')
+
         }
       })
 
@@ -115,7 +159,7 @@ export const Salida = () => {
           <h5 className='text-white'>Buscar</h5>
           <input type="text" placeholder='Escribe el nombre ' onChange={(e) => setFilterData(Data.filter(resp => resp.name.includes(e.target.value)))} className='form-control' />
         </div>
-       
+
       </div>
 
 
@@ -126,8 +170,8 @@ export const Salida = () => {
         <table className="table  table-dark table-hover ">
           <thead>
             <tr>
-            <th className='text-mobile text-table table-desk-header' scope="col"> </th>
-              <th className='text-mobile text-table table-desk-header'  scope="col">Nombre</th>
+              <th className='text-mobile text-table table-desk-header' scope="col"> </th>
+              <th className='text-mobile text-table table-desk-header' scope="col">Nombre</th>
               <th className='text-mobile text-table table-desk-header' scope="col">Identificacion</th>
               <th className='text-mobile text-table table-desk-header' scope="col">Equipo</th>
               <th className='text-mobile text-table table-desk-header' scope="col">Serial</th>
@@ -149,10 +193,10 @@ export const Salida = () => {
 
                   <th className='text-mobile table-desk-header' scope="row">
 
-                  <a className='pointer' onClick={()=>setImagenTitulo({titulo:resp.equipo,img:resp.img})}  data-toggle="modal" data-target="#modalPhone" data-whatever="@mdo" >
+                    <a className='pointer' onClick={() => setImagenTitulo({ titulo: resp.equipo, img: resp.img })} data-toggle="modal" data-target="#modalPhone" data-whatever="@mdo" >
 
                       <img width={50} className='img-thumbnail' style={{ objectFit: 'cover' }} src={resp.img} />
-                  </a>
+                    </a>
 
 
                   </th>
@@ -166,7 +210,7 @@ export const Salida = () => {
                   <td className='text-mobile text-table table-desk-header' >{resp.costoRepuesto}</td>
                   <td className='text-mobile text-table table-desk-header' >{resp.total}</td>
                   <td className='text-mobile text-table table-desk-header' >{resp.correo}</td>
-                  <td className='text-mobile text-table table-desk-header' ><span className="label-status bg-success"  data-toggle="modal" data-target="#listoParaEntrega" data-whatever="@mdo" onClick={() => setIsVisible({ id: resp.id, isVisible: true, idTecnico: resp.idTecnico! })}>{resp.estado}</span></td>
+                  <td className='text-mobile text-table table-desk-header' ><span className="label-status bg-success btn" data-toggle="modal" data-target="#listoParaEntrega" data-whatever="@mdo" onClick={() => setIsVisible({ id: resp.id, isVisible: true, idTecnico: resp.idTecnico! })}>{resp.estado}</span></td>
                 </tr>
 
               ))
@@ -189,48 +233,46 @@ export const Salida = () => {
               </button>
             </div>
             <div className="modal-body">
-
-
+              <div className="form-group">
+                <label htmlFor="">Reseña</label>
+                <textarea placeholder='Escribe la reseña de el equipo' style={{ maxHeight: 300 }} className='form-control' />
+              </div>
               <div className="container">
                 <div className="row justify-content-around">
-
                   <div className="col-auto">
-                  <button className='btn btn-color pl-5 pr-5' onClick={() => retirar(IsVisible.id)} >Si</button>
+                    <button className='btn btn-success pl-5 pr-5' data-dismiss="modal" aria-label="Close" onClick={() => Reparado(IsVisible.id)} >Reparado</button>
                   </div>
                   <div className="col-auto">
-                  <button className='btn btn-color pl-5 pr-5 ' data-dismiss="modal" aria-label="Close" onClick={() => setIsVisible({ id: '', isVisible: false, idTecnico: '' })} >No</button>
+                    <button className='btn btn-danger pl-5 pr-5 ' data-dismiss="modal" aria-label="Close" onClick={() => noReparado(IsVisible.id)} >No Reparado</button>
                   </div>
                 </div>
               </div>
-
             </div>
 
-
-          
 
           </div>
         </div>
       </div>
 
 
-              
-            <div className="modal fade" id="modalPhone" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog modal-lg " role="document">
-                    <div className="modal-content ">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">{ImagenTitulo.titulo}</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <img className='img-thumbnail' src={ImagenTitulo.img} />
 
-                        </div>
-
-                    </div>
-                </div>
+      <div className="modal fade" id="modalPhone" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg " role="document">
+          <div className="modal-content ">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">{ImagenTitulo.titulo}</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
+            <div className="modal-body">
+              <img className='img-thumbnail' src={ImagenTitulo.img} />
+
+            </div>
+
+          </div>
+        </div>
+      </div>
 
 
     </div>

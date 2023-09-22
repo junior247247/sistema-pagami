@@ -1,27 +1,36 @@
-import React,{useContext} from 'react'
+import React,{useContext,useState} from 'react'
 
 import {signInWithEmailAndPassword,getAuth}from 'firebase/auth'
 import { useForm } from '../hooks/useForm'
 import { async } from '@firebase/util';
 import { app } from '../Firebase/conexion';
 import { context } from '../hooks/AppContext';
+import { Indicators } from './indicator/Indicators';
 
 export const Login = () => {
     const {onChange,email,pass} = useForm({email:'04@gmail.com',pass:'123456'});
+    const [IsLoading, setIsLoading] = useState(false)
 
     const {login} = useContext(context)
 
     const sigin= async ()=>{
-        if(email=='' && pass=='')return alert('Completa todos los campos');
-        const auth=getAuth(app);
-         const current= await  signInWithEmailAndPassword(auth,email,pass);
-         if(current.user==null)return alert('Email o contraseña incorrecta');
-         login(current.user.uid);
+        try {
+            if(email=='' && pass=='')return alert('Completa todos los campos');
+            setIsLoading(true)
+            const auth=getAuth(app);
+             const current= await  signInWithEmailAndPassword(auth,email,pass);
+             if(current.user==null)return alert('Email o contraseña incorrecta');
+             login(current.user.uid);
+             setIsLoading(false)           
+        } catch (error) {
+            setIsLoading(false)  
+        }
+ 
     }
 
 
     return (
-        <div className='container-login'>
+        <div className='container-login bg-main'>
             <div className="login">
                 <div className="d-flex flex-column">
                     <h1 className='text-white text-center mt-2'>Login</h1>
@@ -46,6 +55,10 @@ export const Login = () => {
                 </div>
               
             </div>
+
+            {
+                (IsLoading) && <Indicators/>
+            }
         </div>
     )
 }

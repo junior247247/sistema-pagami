@@ -7,6 +7,7 @@ import { Producto } from '../entidades/Producto';
 //import { PDFViewer } from '@react-18-pdf/renderer';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { FirebaseStorage } from 'firebase/storage';
+import { Indicators } from './indicator/Indicators';
 export interface fileImg {
     fileUri: string;
     error: string;
@@ -23,7 +24,7 @@ export const Productos = () => {
     const [producto, setProducto] = useState<Producto[]>([]);
     const [getProdById, setGetProdById] = useState<Producto>();
 
-
+    const [IsLoading, setIsLoading] = useState(false)
 
     const [Title, setTitle] = useState('')
     const [Description, setDescription] = useState('')
@@ -32,25 +33,25 @@ export const Productos = () => {
     const [Existencia, setExistencia] = useState('')
 
     const [LocalImg, setLocalImg] = useState<any>(null)
-    
+
     useEffect(() => {
 
         onChange('Productos')
 
 
     }, [])
- 
 
 
 
 
 
-    const cargarImagen=async(file:FileList)=>{
+
+    const cargarImagen = async (file: FileList) => {
         const archivo = file[0];
         setfile(file)
-        if(archivo){
-            const reader= new FileReader();
-            reader.onload=(e)=>{
+        if (archivo) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
                 setLocalImg(e.target!.result);
             }
             reader.readAsDataURL(archivo);
@@ -102,6 +103,7 @@ export const Productos = () => {
     }
 
     useEffect(() => {
+        setIsLoading(true)
         const db = getFirestore(app);
         const coll = collection(db, 'Producto');
         const items = query(coll, orderBy('timestamp', 'desc'), where('idLocal', '==', idLoca));
@@ -119,6 +121,7 @@ export const Productos = () => {
             })
             setProducto(Productos);
         })
+        setIsLoading(false)
     }, [])
 
     const Eliminar = (id: string) => {
@@ -126,20 +129,20 @@ export const Productos = () => {
         const coll = doc(db, 'Producto', id);
         deleteDoc(coll);
     }
-    const updateProd =async (id: string) => {
+    const updateProd = async (id: string) => {
         const db = getFirestore(app);
         const coll = doc(db, 'Producto', id);
-        if(file){
-            const  img= await getFile(file)
+        if (file) {
+            const img = await getFile(file)
             updateDoc(coll, {
                 codigo: Title,
                 description: Description,
                 precio: PVenta,
                 existencia: Existencia,
                 priceCompra: PCompra,
-                img:img.fileUri
+                img: img.fileUri
             })
-        }else{
+        } else {
             updateDoc(coll, {
                 codigo: Title,
                 description: Description,
@@ -148,15 +151,16 @@ export const Productos = () => {
                 priceCompra: PCompra
             })
         }
-  
-   
+
+
     }
 
     const createProd = async () => {
         const db = getFirestore(app);
         const coll = collection(db, 'Producto');
+        setIsLoading(true)
         if (file) {
-            const  img= await getFile(file)
+            const img = await getFile(file)
 
             addDoc(coll, {
                 codigo: Title,
@@ -187,6 +191,7 @@ export const Productos = () => {
         setPCompra('')
         setPVenta('')
         setLocalImg(null)
+        setIsLoading(false)
 
     }
 
@@ -253,7 +258,7 @@ export const Productos = () => {
                             <div className="col-auto mt-5 mr-4">
 
 
-                                <input   type="file" onChange={(e) => cargarImagen(e.target.files!)} accept='image/*' className='text-color' />
+                                <input type="file" onChange={(e) => cargarImagen(e.target.files!)} accept='image/*' className='text-color' />
                             </div>
 
 
@@ -276,21 +281,21 @@ export const Productos = () => {
                             <div className="col">
                                 <div className="row justify-content-between">
                                     <div className="col">
-                                    <h4 className=' text-white text-center'>Imagen</h4>
-                                   </div>
+                                        <h4 className=' text-white text-center'>Imagen</h4>
+                                    </div>
                                     <div className="col">
 
                                         {
-                                            (file) &&    <button onClick={()=>{setfile(undefined);setLocalImg(null)}} type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                            <span className='text-white' aria-hidden="true">&times;</span>
-                                        </button>
+                                            (file) && <button onClick={() => { setfile(undefined); setLocalImg(null) }} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                                <span className='text-white' aria-hidden="true">&times;</span>
+                                            </button>
                                         }
 
-                                      
+
                                     </div>
                                 </div>
-                         
-                                <img className={(file) && 'img-thumbnail'} src={ LocalImg} />
+
+                                <img className={(file) && 'img-thumbnail'} src={LocalImg} />
 
                             </div>
                         </div>
@@ -313,10 +318,6 @@ export const Productos = () => {
 
             </div>
 
-            {/*
-            <img src='https://firebasestorage.googleapis.com/v0/b/sistem-34148.appspot.com/o/images%2Fasd?alt=media&token=6cae97d6-b492-49da-b5b4-00301ce51c8c'/>
-
-    */}
 
 
             <div className='ml-3 mr-3 mt-5  table-container'>
@@ -344,7 +345,7 @@ export const Productos = () => {
                                 <tr key={index}>
                                     <th className='text-mobile text-table' scope="row"><a className='code-link' >{resp.codigo}</a></th>
 
-                             
+
                                     <td className='text-mobile text-table' >{resp.description.toUpperCase()}</td>
                                     <td className='text-mobile text-table' >{Number(resp.pCompra).toLocaleString('es')}</td>
                                     <td className='text-mobile text-table' >{Number(resp.precio).toLocaleString('es')}</td>
@@ -406,42 +407,17 @@ export const Productos = () => {
                             </form>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                           
                             <button type="button" className="btn btn-primary" onClick={() => updateProd(getProdById!.id)} data-dismiss="modal">Guardar</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-{/*
-            <div className="modal-container-spinner">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-secondary" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-success" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-danger" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-warning" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-info" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-light" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
-                <div className="spinner-border text-dark" role="status">
-                    <span className="sr-only">Loading...</span>
-                </div>
 
-            </div>*/}
-
+            {
+                (IsLoading) && <Indicators />
+            }
 
 
 

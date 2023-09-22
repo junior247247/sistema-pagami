@@ -6,6 +6,7 @@ import { context } from '../hooks/AppContext'
 import { ParseToDate } from '../hooks/ParseDate';
 import { useForm } from '../hooks/useForm';
 import { ModalTipo } from './modalBoostrap/ModalTipo';
+import { Indicators } from './indicator/Indicators';
 //import { ReporteEntrada } from './ReporteEntrada';
 
 export const En_Reparacion = () => {
@@ -27,6 +28,12 @@ export const En_Reparacion = () => {
     const [Description, setDescription] = useState('')
     const [CostoReparacion, setCostoReparacion] = useState('')
     const [CostoRepuesto, setCostoRepuesto] = useState('')
+    const [Telefono, setTelefono] = useState('')
+    const [Serial, setSerial] = useState('')
+    const [NombreCLiente, setNombreCLiente] = useState('')
+    const [Isloading, setIsloading] = useState(false)
+    const [Correo, setCorreo] = useState('')
+    const [Dni, setDni] = useState('')
 
     const listo = (id: string) => {
         const db = getFirestore(app);
@@ -58,6 +65,13 @@ export const En_Reparacion = () => {
         const document = doc(coll, id);
         const get = await getDoc(document);
         setDescCosto({ cRepuesto: get.get('costoRepuesto'), cReparacion: get.get('costoReparacion'), total: get.get('total') });
+
+        setTelefono(get.get('equipo'))  
+        setSerial(get.get('serial'))  
+        setNombreCLiente(get.get('name'))  
+        setCorreo(get.get('correo'))  
+        setDni(get.get('identification'))  
+        setImagenTitulo({img:get.get('fileUri'),titulo:''})  
     }
 
     const ObtenerCostosYDescription = async (id: string) => {
@@ -69,7 +83,8 @@ export const En_Reparacion = () => {
         const resp = await getDoc(document);
         setDescription(resp.get('description'))
          setCostoReparacion(resp.get('costoReparacion'))
-         setCostoRepuesto(resp.get('costoRepuesto'))   
+         setCostoRepuesto(resp.get('costoRepuesto')) 
+         setImagenTitulo({img:resp.get('fileUri'),titulo:''})  
        
     }
 
@@ -140,6 +155,7 @@ export const En_Reparacion = () => {
     }
 
     const retirar = async (id: string, idTecnico?: string) => {
+        setIsloading(true)
         const db = getFirestore(app);
         const coll = collection(db, 'Entrada');
         const document = doc(coll, id);
@@ -149,7 +165,7 @@ export const En_Reparacion = () => {
         agregarCaja(total);
         addCajaDiaria(total);
         updateDoc(document, {
-            estado: 'Retirado'
+            estado: 'Listo para entregar'
         })
 
 
@@ -178,38 +194,39 @@ export const En_Reparacion = () => {
         }
 
 
-
+        Mostrar()
+        setIsloading(false)
 
 
         setIsVisible({ isVisible: false, id: '', idTecnico: '' })
 
     }
 
-
-    useEffect(() => {
-        onChange('En reparacion')
+    const Mostrar=()=>{
         const db = getFirestore(app);
         const coll = collection(db, 'Entrada');
         const itemsQuery = query(coll, orderBy('timestamp', 'desc'), where('estado', '==', 'En Reparacion'), where('idLoca', '==', idLoca));
-        onSnapshot(itemsQuery, (snap) => {
+      const unsucribe=  onSnapshot(itemsQuery, (snap) => {
             const data: Entrada[] = snap.docs.map(resp => {
+                const doc=resp.data()
                 return {
                     id: resp.id,
-                    name: resp.get('name'),
-                    phone: resp.get('telefono'),
-                    correo: resp.get('correo'),
-                    identiifcation: resp.get('identification'),
-                    observacion: resp.get('observacion'),
-                    costoReparacion: resp.get('costoReparacion'),
-                    costoRepuesto: resp.get('costoRepuesto'),
-                    fecha: new Date(resp.get('timestamp')),
-                    total: resp.get('total'),
-                    equipo: resp.get('equipo'),
-                    serial: resp.get('serial'),
-                    estado: resp.get('estado'),
-                    idTecnico: resp.get('idTecnico'),
-                    noFact: resp.get('noFact'),
-                    img: resp.get('fileUri')
+                    name: doc.name,
+                    phone: doc.telefono,
+                    correo: doc.correo,
+                    identiifcation: doc.identification ,
+                    observacion: doc.observacion,
+                    costoReparacion: doc.costoReparacion,
+                    costoRepuesto: doc.costoRepuesto,
+                    fecha: new Date(doc.timestamp),
+                    total: doc.total,
+                    equipo: doc.equipo,
+                    serial: doc.serial,
+                    estado: doc.estado,
+                    idTecnico: doc.idTecnico,
+                    noFact: doc.noFact,
+                    img: doc.fileUri,
+                    subestado:doc.subestado
 
                 }
             })
@@ -217,7 +234,12 @@ export const En_Reparacion = () => {
             setFilterData(data);
         })
 
+    }
 
+    useEffect(() => {
+        onChange('En reparacion')
+
+        Mostrar()
     }, [])
 
     return (
@@ -264,7 +286,7 @@ export const En_Reparacion = () => {
 
                                     <th className='text-mobile table-desk-header' scope="row">
 
-                                        <a onClick={() => setImagenTitulo({ titulo: resp.phone, img: resp.img })} data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" >
+                                        <a onClick={() => setImagenTitulo({ titulo: resp.equipo, img: resp.img })} data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" >
 
                                             <img width={50} className='img-thumbnail' style={{ objectFit: 'cover' }} src={resp.img} />
                                         </a>
@@ -318,7 +340,7 @@ export const En_Reparacion = () => {
                 <div className="modal-dialog modal-lg " role="document">
                     <div className="modal-content ">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">{ImagenTitulo.titulo}</h5>
+                            <h5 className="modal-title" id="exampleModalLabel">{ (ImagenTitulo.titulo) && ImagenTitulo.titulo.toUpperCase()}</h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -337,11 +359,11 @@ export const En_Reparacion = () => {
 
 
 
-            <div className="modal fade" id="modalEstado" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
+            <div className="modal fade " id="modalEstado" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog modal-lg" role="document">
+                    <div className="modal-content ">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Actualizar estado</h5>
+                            <h5 className="modal-title" id="exampleModalLabel">Estado</h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -349,15 +371,21 @@ export const En_Reparacion = () => {
                         <div className="modal-body">
                             <div className="container">
                                 <div className="row justify-content-between">
-                                    <div className="col-12">
-                                        <p>Costo Reparacion:{Number(DescCosto.cReparacion).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</p>
+                                    <div className="col-6">
+                                    <img className='img-thumbnail' src={ImagenTitulo.img} />
                                     </div>
-                                    <div className="col-12">
-                                        <p>Costo Repuesto:{Number(DescCosto.cRepuesto).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</p>
+                                    <div className="col-6">
+                                    <h6>{NombreCLiente.toUpperCase()}</h6>
+                                    <h6>{Dni}</h6>
+                                    <h6>{Telefono}</h6>
+                                    <h6>{Serial}</h6>
+                                    <h6>{Correo}</h6>
+                                    <h6>Costo Reparacion:{Number(DescCosto.cReparacion).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</h6>
+                                    <h6>Costo Repuesto:{Number(DescCosto.cRepuesto).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</h6>
+                                    <h6>Total:{Number(DescCosto.total).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</h6>
+
                                     </div>
-                                    <div className="col-12">
-                                        <p>Total:{Number(DescCosto.total).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</p>
-                                    </div>
+                                
                                 </div>
 
                                 <div className="modal-footer ">
@@ -365,10 +393,9 @@ export const En_Reparacion = () => {
 
 
                                         <div className="row justify-content-between">
-                                            <a data-dismiss="modal" aria-label="Close" onClick={()=>retirar(IsVisible.id, IsVisible.idTecnico)} className="btn text-white btn-primary col-auto">Retirado</a>
-                                            <a className="btn text-white btn-primary col-auto">Reporte</a>
-                                            <a onClick={()=>ObtenerCostosYDescription(IsVisible.id)} data-toggle="modal" data-target="#modalActualizarPrecio" data-whatever="@mdo" className="btn text-white btn-primary col-auto">Actualizar Precio</a>
-                                            <a  onClick={()=>getDataSelect(IsVisible.id)} data-toggle="modal" data-target="#modalTipo" data-whatever="@mdo"  className="btn text-white btn-primary col-auto">Tipo</a>
+                                            <a data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#modalDeleItem" data-whatever="@mdo"  className="btn text-white btn-color col-auto">Listo para entregar</a>
+                                        
+                                            <a onClick={()=>ObtenerCostosYDescription(IsVisible.id)} data-toggle="modal" data-target="#modalActualizarPrecio" data-whatever="@mdo" className="btn text-white btn-color col-auto">Actualizar Precio</a>
                                         </div>
                                     </div>
                                 </div>
@@ -458,6 +485,40 @@ export const En_Reparacion = () => {
                     </div>
                 </div>
             </div>
+
+
+
+            <div className="modal fade" id="modalDeleItem" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">El equipo fue revisado y reparado</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="container">
+                                <div className="row justify-content-around">
+                                    <div className="col-4">
+                                        <a onClick={()=>retirar(IsVisible.id, IsVisible.idTecnico)} data-dismiss="modal" aria-label="Close" className="btn btn-color text-white">Si</a>
+                                    </div>
+                                    <div className="col-4">
+                                        <a className="btn btn-color text-white" data-dismiss="modal" aria-label="Close">No</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+                      {
+                        (Isloading) && <Indicators/>
+                      }  
+
 
 
         </div>

@@ -185,7 +185,7 @@ export const MainComponent = () => {
   return (
     <BrowserRouter>
 
-      <div className='container-fluid  ' style={{minHeight:'100vh'}}>
+      <div className='container-fluid  bg-main ' style={{minHeight:'100vh'}}>
         <div className="row  h-100 justify-content-between">
           <div className="border-l  pt-5  col-lg-2 none  bg-main " style={{minHeight:'100vh'}} id='lateral'>
             <div className="d-flex justify-content-between  ">

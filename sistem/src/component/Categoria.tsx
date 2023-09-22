@@ -10,6 +10,7 @@ interface Categoria{
     name:string;
     id:string;
     fecha:string;
+    img:string
 }
 interface fileImg {
     fileUri: string;
@@ -23,6 +24,7 @@ export const Categoria = () => {
     const [file, setfile] = useState<FileList>();
     const [cagoria, setCagoria] = useState<Categoria[]>([])
    const {name,onChange:onChangeForm,clear} =  useForm({name:''})
+   const [IsLoading, setIsLoading] = useState(false)
     useEffect(() => {
       onChange('Categoria')
     }, [])
@@ -76,7 +78,8 @@ export const Categoria = () => {
                 return{
                     id:res.id,
                     name:res.get('name'),
-                    fecha:res.get('timestamp')
+                    fecha:res.get('timestamp'),
+                    img:res.get('icon')
                 }
             })
             setCagoria(data)
@@ -86,6 +89,7 @@ export const Categoria = () => {
     
 
     let add=()=>{
+        setIsLoading(true)
         const db=getFirestore(app)
         const coll=collection(db,'Categoria')
         if(file){
@@ -95,7 +99,7 @@ export const Categoria = () => {
         }else{
             addDoc(coll,{name,timestamp:new Date().getTime()})
         }
-     
+        setIsLoading(false)
         clear()
     }
     
@@ -123,6 +127,7 @@ export const Categoria = () => {
         <table className='table  table-dark '>
             <thead >
                 <tr>
+                 <th className='text-mobile text-table table-desk-header'  >icon</th>
                     <th className='text-mobile text-table table-desk-header' colSpan={2} >FECHA</th>
                     <th className='text-mobile text-table table-desk-header' colSpan={2} >CATEGORIA</th>
              
@@ -138,6 +143,7 @@ export const Categoria = () => {
                         cagoria.map((item,index)=>(
 
                             <tr>
+                                  <td className='text-mobile text-table' > <img width={50} style={{ objectFit: 'cover' }} src={item.img} /></td>
                             <td colSpan={2}  className='text-mobile table-desk-header'>{ParseToDate(new Date(item.fecha))}</td>
                             <td colSpan={2}>{item.name.toUpperCase()}</td>
                            <td ><a className='btn btn-primary' href="#">Editar</a></td>

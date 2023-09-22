@@ -15,7 +15,8 @@ export interface Entrada{
     estado:string;
     idTecnico?:string;
     noFact:string;
-    img:string
+    img:string,
+    subestado:string
 
 }
 
@@ -50,6 +51,7 @@ export interface Caracteristicas{
     noFact?:string;
     cliente?:string;
     fecha:Date;
+    subestado:string;
     
 
 

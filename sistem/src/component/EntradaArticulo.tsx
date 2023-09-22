@@ -5,11 +5,12 @@ import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, where, on
 import { Entrada } from '../entidades/Entrada';
 import { getStorage, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../Firebase/conexion';
-import { Indicator } from './Indicator';
+
 import { async } from '@firebase/util';
 import { ParseToDate } from '../hooks/ParseDate';
 
 import { clear } from 'console';
+import { Indicators } from './indicator/Indicators';
 
 
 interface fileImg {
@@ -126,19 +127,7 @@ export const EntradaArticulo = () => {
 
 
 
-    useEffect(() => {
-     
-      const timer= setTimeout(() => {
-        document.getElementById('modal-indicator')!.style.display='none'
-        setIsLoading(false)
-      }, 3000);
 
-    
-      return () => clearTimeout(timer)
-        
-      
-    }, [IsLoading])
-    
 
 
     useEffect(() => {
@@ -202,11 +191,13 @@ export const EntradaArticulo = () => {
 
 
     const create = async () => {
+
+        if(!name || !identification || !telefono || !correo || !equipo || !serial || !costoReparacion || !costoRepuesto) return alert('Completa todos los campos')
+        setIsLoading(true)
         const db = getFirestore(app);
         const coll = collection(db, 'Entrada');
 
-        setIsLoading(true);
-        document.getElementById('modal-indicator')!.style.display='flex'
+
        let url = '';
         if (file != null) {
 
@@ -215,8 +206,6 @@ export const EntradaArticulo = () => {
         }
 
 
-
-        //    document.body.style.cursor = 'wait'
 
 
         addDoc(coll, {
@@ -258,10 +247,13 @@ export const EntradaArticulo = () => {
             noFact: Count,
             idTecnico: NameSelect.id,
             cierre: 'SIN CIERRE',
-            idLoca
+            idLoca,
+            subestado:'en reparacion'
 
         })
         addCajaDiaria();
+        setIsLoading(false)
+        setLocalImg(null)
         clear();
         
 
@@ -270,7 +262,7 @@ export const EntradaArticulo = () => {
 
 
     return (
-        <div className='container-fluid'>
+        <div className='container-fluid bg-main'>
             <div className="container-fluid rounded border">
 
          
@@ -330,34 +322,34 @@ export const EntradaArticulo = () => {
                     <div className="row">
                         <div className="col-auto form-group">
 
-                            <input value={name.toUpperCase()}  placeholder='Nombre' onChange={(e) => onChangeForm(e.target.value, 'name')} type="text" className='p-2 from-control ' />
+                            <input value={name.toUpperCase()}  placeholder='Nombre' onChange={(e) => onChangeForm(e.target.value, 'name')} type="text" className='p-2 form-control ' />
                         </div>
                         <div className="col-auto form-group">
 
-                            <input value={identification} placeholder='Identificacion' onChange={(e) => onChangeForm(e.target.value, 'identification')} type="text" className='p-2 from-control ' />
+                            <input value={identification} placeholder='Identificacion' onChange={(e) => onChangeForm(e.target.value, 'identification')} type="text" className='p-2 form-control ' />
                         </div>
                     </div>
 
                     <div className="row  ">
                         <div className="col-auto form-group">
 
-                            <input value={telefono}  placeholder='Telefono' onChange={(e) => onChangeForm(e.target.value, 'telefono')} type='text' className='p-2 from-control' />
+                            <input value={telefono}  placeholder='Telefono' onChange={(e) => onChangeForm(e.target.value, 'telefono')} type='text' className='p-2 form-control' />
                         </div>
                         <div className="col-auto form-group">
 
-                            <input value={correo} placeholder='Correo' onChange={(e) => onChangeForm(e.target.value, 'correo')} type="text" className='p-2 from-control' />
+                            <input value={correo} placeholder='Correo' onChange={(e) => onChangeForm(e.target.value, 'correo')} type="text" className='p-2 form-control' />
                         </div>
                     </div>
 
                     <div className="row  mb-4">
                         <div className="col-auto">
 
-                            <input value={equipo.toUpperCase()} placeholder='Equipo' onChange={(e) => onChangeForm(e.target.value, 'equipo')} type="text" className='p-2 from-control' />
+                            <input value={equipo.toUpperCase()} placeholder='Equipo' onChange={(e) => onChangeForm(e.target.value, 'equipo')} type="text" className='p-2 form-control' />
                         </div>
 
                         <div className="col-auto">
 
-                            <input value={serial} placeholder='Serial' onChange={(e) => onChangeForm(e.target.value, 'serial')} type="text" className='p-2 from-control' />
+                            <input value={serial} placeholder='Serial' onChange={(e) => onChangeForm(e.target.value, 'serial')} type="text" className='p-2 form-control' />
                         </div>
                     </div>
 
@@ -617,7 +609,7 @@ export const EntradaArticulo = () => {
                                 <td className='text-color p-2' width="50%">
 
                                     <div className="form-group">
-                                        <input type="text" className='form-control' min={1} value={costoRepuesto} onChange={(e) => onChangeForm(e.target.value, 'costoRepuesto')} placeholder='25.000 $' />
+                                        <input type="text" className='form-control' min={1} value={costoRepuesto} onChange={(e) => onChangeForm(e.target.value, 'costoRepuesto')} placeholder='$ 0.00' />
                                     </div>
 
                                 </td>
@@ -629,7 +621,7 @@ export const EntradaArticulo = () => {
                                 <td colSpan={2} className='text-color p-2'>
 
                                     <div className="form-group">
-                                        <input type="text" min={1} className='form-control' value={costoReparacion} onChange={(e) => onChangeForm(e.target.value, 'costoReparacion')} placeholder='25.000 $' />
+                                        <input type="text" min={1} className='form-control' value={costoReparacion} onChange={(e) => onChangeForm(e.target.value, 'costoReparacion')} placeholder='$ 0.00' />
                                     </div>
                                 </td>
                             </tr>
@@ -637,7 +629,7 @@ export const EntradaArticulo = () => {
                                 <td rowSpan={2} className='text-color p-2' valign="middle" align="left">Costo total:  </td>
                             </tr>
                             <tr>
-                                <td colSpan={2} className='text-color p-2'>{Number(Number(costoReparacion) + Number(costoRepuesto)).toLocaleString('es')} $</td>
+                                <td colSpan={2} className='text-color p-2'>$ {Number(Number(costoReparacion) + Number(costoRepuesto)).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})} </td>
                             </tr>
                         </table>
 
@@ -665,14 +657,9 @@ export const EntradaArticulo = () => {
 
            
 
-                <div id='modal-indicator' className='container-indicator' onClick={() => setIsLoading(false)}>
-                    <div className="body-indicator">
-                        <div className="indicator-success">
-                            <h4 className='text-black'>Exito</h4>
-                            <div className='gg-check'></div>
-                        </div>
-                    </div>
-                </div>
+                    {
+                        (IsLoading) && <Indicators/>
+                    }
 
 
 
