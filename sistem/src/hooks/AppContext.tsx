@@ -107,11 +107,11 @@ export const AppContext = ({children}:any) => {
     
     const close=(close:boolean)=>{
        // dispatch({type:'close',close});
-        localStorage.clear()
+        localStorage.clear() 
     }
     const login=(idLogin:string)=>{
             localStorage.setItem('idLogin',idLogin)
-       // dispatch({type:'login',idLocal:idLogin});
+        dispatch({type:'login',idLocal:idLogin});
         //console.log(idLogin);
     }
     const onChange=(state:string)=>{

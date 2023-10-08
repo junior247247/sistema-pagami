@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Caracteristicas, Entrada } from '../entidades/Entrada';
 import { app } from '../Firebase/conexion';
 import { context } from '../hooks/AppContext'
+import { ReporteEntrada } from './ReporteEntrada';
+import { Indicators } from './indicator/Indicators';
 //import { ReporteEntrada } from './ReporteEntrada';
 
 interface IsView {
@@ -206,7 +208,7 @@ export const Historial = () => {
                   <td className='text-mobile text-table table-desk-header'>{resp.costoRepuesto}</td>
                   <td className='text-mobile text-table table-desk-header'>{resp.total}</td>
                   <td className='text-mobile text-table table-desk-header'>{resp.correo}</td>
-                  <td><a className={(resp.subestado == 'reparado') ? 'btn btn-success' : 'btn-danger btn'} data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo" onClick={() => setIsvisible({ id: resp.id, isVisible: true })} >{resp.subestado}</a></td>
+                  <td><a className={(resp.subestado == 'reparado') ? 'btn btn-success' : 'btn-danger btn'}  onClick={() => setIsvisible({ id: resp.id, isVisible: true })} >{resp.subestado.toUpperCase()}</a></td>
                 </tr>
 
               ))
@@ -267,9 +269,8 @@ export const Historial = () => {
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div className="modal-body">
-              <img className='img-thumbnail' src={ImagenTitulo.img} />
-
+            <div className="modal-body" style={{minHeight:500}}>
+            <img className='img-thumbnail' src={ImagenTitulo.img}/>
             </div>
 
           </div>
@@ -277,7 +278,10 @@ export const Historial = () => {
       </div>
 
 
+            {
+              (Isvisible.isVisible) &&       <ReporteEntrada onClose={()=>setIsvisible({id:'',isVisible:false})} id={Isvisible.id}/>
 
+            }
 
 
     </div>

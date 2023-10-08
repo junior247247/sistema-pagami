@@ -324,7 +324,8 @@ export const Ventas = () => {
                     codigo: data.get('codigo'),
                     precio: data.get('precio'),
                     isSelected: false,
-                    cant: 1
+                    cant: 1,
+                    estado:data.get('estado')
                 }
 
             })
@@ -406,7 +407,7 @@ export const Ventas = () => {
                         </form>
                     </div>
                     <div className="col-auto mr-3 ">
-                        <button type="button" className="btn " data-toggle="modal" data-target=".bd-example-modal-lg">Nueva</button>
+                        <button type="button" className="btn btn-warning text-white" data-toggle="modal" data-target=".bd-example-modal-lg">Nueva</button>
                 
                     </div>
                 </div>
@@ -423,13 +424,13 @@ export const Ventas = () => {
                 <table className="table table-dark table-hover ">
                     <thead>
                         <tr>
-                            <th className='text-mobile text-table'colSpan={2} scope="col">Description</th>
+                            <th className='text-mobile text-table'colSpan={2} scope="col">producto</th>
                        
-                            <th className='text-mobile text-table' scope="col">Precio</th>
-                            <th className='text-mobile text-table' scope="col">Cantidad</th>
-                            <th className='text-mobile text-table' scope="col">Total</th>
+                            <th className='text-mobile text-table' scope="col">precio</th>
+                            <th className='text-mobile text-table' scope="col">cantidad</th>
+                            <th className='text-mobile text-table' scope="col">total</th>
 
-                            <th className='text-mobile text-table' scope="col">Eliminar</th>
+                            <th className='text-mobile text-table' scope="col">eliminar</th>
                         </tr>
                     </thead>
                     <tbody >
@@ -456,7 +457,7 @@ export const Ventas = () => {
 
             </div>
             <div className="d-flex justify-content-between">
-                <button className='btn ml-3 btn-outline-light mt-3' onClick={
+                <button className='btn ml-3 btn-warning text-white mt-3' onClick={
                     () => setIsVisible(true)
 
                 }>Guardar</button>

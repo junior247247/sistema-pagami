@@ -1,0 +1,364 @@
+1
+00:00:00,130 --> 00:00:05,100
+Una es que ya tenemos esto entonces podemos empezar a jugar con lo que es el Extrem nos vamos a colocar
+
+2
+00:00:05,100 --> 00:00:08,910
+en diferentes posiciones y vamos a leer informaciÃ³n desde cada una de ellas.
+
+3
+00:00:09,030 --> 00:00:14,130
+Vamos a empezar por algo muy sencillo vamos a leer quÃ© les parece 7 bits y recuerden que para eso vamos
+
+4
+00:00:14,130 --> 00:00:19,830
+a necesitar lo que es el mÃ©todo Cyc que tiene dos parÃ¡metros el primero es la distancia desde el punto
+
+5
+00:00:19,830 --> 00:00:24,480
+de referencia donde va a quedar la nueva posiciÃ³n y el segundo va a ser el punto de referencia que recuerden
+
+6
+00:00:24,480 --> 00:00:31,680
+que usamos sic olvidan que a su vez tenÃ­a lo que era Billing current y en cÃ³mo nosotros en este ejercicio
+
+7
+00:00:31,680 --> 00:00:38,190
+nos vamos a querer colocar a cero distancias desde el inicio pues vamos a poner entonces primero el
+
+8
+00:00:38,190 --> 00:00:45,180
+nombre del stream que es en ese punto lo que es Zick y como nos queremos colocar a cero distancia vamos
+
+9
+00:00:45,180 --> 00:00:47,630
+a ponerle un cero que es el primer parÃ¡metro.
+
+10
+00:00:47,910 --> 00:00:52,950
+Luego el segundo va a ser desde donde queremos colocarnos como pueden ver aquÃ­ nos sugiere Zick o bien
+
+11
+00:00:53,010 --> 00:00:59,970
+vamos a usarlo y como queremos que sea desde el inicio vamos al picking cerramos con Punto y Coma vamos
+
+12
+00:00:59,970 --> 00:01:06,990
+a dejar un comentario de que es lo que estamos haciendo y esto quiere decir que nos estamos colocando
+
+13
+00:01:07,080 --> 00:01:10,530
+a cero distancia del inicio.
+
+14
+00:01:10,650 --> 00:01:16,450
+Ahora lo que queremos es leer la informaciÃ³n del extremo entonces vamos a usar lo que es.
+
+15
+00:01:17,010 --> 00:01:22,260
+Recuerden que Rid necesita tres parÃ¡metros el primero va a ser el arreglo de bits el segundo pues va
+
+16
+00:01:22,260 --> 00:01:28,530
+a ser un offset recuerden que el offset es un entero que nos indicaba la distancia desde el inicio hasta
+
+17
+00:01:28,620 --> 00:01:36,390
+un punto determinado y el tercero es la cantidad de bits que se van a leer entonces ponemos M ese punto
+
+18
+00:01:36,810 --> 00:01:42,300
+RIP porque es el mÃ©todo que vamos a usar como primer parÃ¡metro pues vamos a colocar el buffer que en
+
+19
+00:01:42,300 --> 00:01:48,390
+este caso es el arreglo de bits que tenemos aquÃ­ que se llama buffer separÃ¡bamos con una coma para el
+
+20
+00:01:48,390 --> 00:01:54,570
+segundo parÃ¡metro y recuerden que el segundo y bueno aquÃ­ en el segundo como nuestra posiciÃ³n actual
+
+21
+00:01:55,080 --> 00:02:02,760
+ya estÃ¡ definida porque la definimos en lo que era Cyc pues no queremos que se mueva de ahÃ­ pues no
+
+22
+00:02:02,760 --> 00:02:08,850
+queremos que se mueva de ahÃ­ entonces vamos a colocar un cero y decimos que cuantos bytes queremos leer
+
+23
+00:02:09,030 --> 00:02:14,730
+les habÃ­a dicho que 7 entonces vamos a colocar aquÃ­ 7 y vamos a cerrar con punto y coma y dejamos aquÃ­
+
+24
+00:02:14,730 --> 00:02:20,640
+con un comentario lo que estamos haciendo que desde la posiciÃ³n donde nos encontramos
+
+25
+00:02:24,750 --> 00:02:33,840
+leemos 7 bits y ahora sÃ­ podemos mostrar la informaciÃ³n y lo hacemos simplemente con un Consol punto
+
+26
+00:02:34,770 --> 00:02:40,740
+Wrigley como lo que nosotros queremos mostrar es lo que va a aparecer en el buffer vamos a hacer algo
+
+27
+00:02:40,740 --> 00:02:46,020
+similar a lo que hicimos con Right estÃ¡ codificado en un tipo diferente al que nosotros queremos mostrar
+
+28
+00:02:46,260 --> 00:02:52,150
+aquÃ­ nosotros obtuvimos lo que eran los bits ahora queremos obtener lo que es la cadena entonces prÃ¡cticamente
+
+29
+00:02:52,150 --> 00:03:02,190
+podemos usar lo mismo quitamos las dobles comillas y decimos Haski encoding punto Haski punto Get Streeck
+
+30
+00:03:02,460 --> 00:03:07,040
+porque ahora lo que queremos obtener es la cadena que se encuentra almacenada en el buffer.
+
+31
+00:03:07,170 --> 00:03:13,130
+AquÃ­ obtuvimos los bits que se encuentran en la cadena y aquÃ­ va a ser algo al revÃ©s mÃ¡s o menos.
+
+32
+00:03:13,500 --> 00:03:20,280
+Entonces de dÃ³nde queremos obtener la cadena de lo que es el buffer y cerramos con punto y coma.
+
+33
+00:03:20,280 --> 00:03:26,930
+Vamos a compilar y a ejecutar y dice dame la cadena para usar en el flujo vamos a ponerle algo como
+
+34
+00:03:27,030 --> 00:03:29,030
+hola Koma.
+
+35
+00:03:29,490 --> 00:03:37,080
+Este es el primer ejemplo y vamos a darle enter y nos dice capacidad â‚¬70 porque recuerden la que le
+
+36
+00:03:37,080 --> 00:03:40,760
+asignamos en un principio nos dice que la longitud es de 31 por quÃ©.
+
+37
+00:03:40,760 --> 00:03:47,220
+Porque nosotros estamos aquÃ­ tenemos cuatro cinco de la coma seis de un espacio cuatro que tenemos aquÃ­
+
+38
+00:03:47,220 --> 00:03:59,870
+10 11 del espacio 12 13 14 15 16 17 del espacio 23 hasta aquÃ­ 24 el espacio 25 26 27 28 29 30 y 31.
+
+39
+00:03:59,880 --> 00:04:02,230
+Esa es la longitud de toda esta cadena.
+
+40
+00:04:02,280 --> 00:04:07,350
+Luego aquÃ­ pusimos que nos estamos colocando a cero distancia desde el inicio es decir desde aquÃ­ y
+
+41
+00:04:07,350 --> 00:04:10,560
+desde ahÃ­ vamos a empezar a leer 7 bits.
+
+42
+00:04:10,560 --> 00:04:13,770
+1 2 3 cuatro coma cinco.
+
+43
+00:04:13,770 --> 00:04:19,460
+El espacio 6 y la E es el 7 por eso aquÃ­ nos muestra Hola como espacio.
+
+44
+00:04:19,810 --> 00:04:20,820
+Porque estÃ¡ leyendo.
+
+45
+00:04:20,820 --> 00:04:24,510
+7 batch vemos que funciona de una buena forma.
+
+46
+00:04:24,510 --> 00:04:26,230
+Vamos a hacer una segunda prueba.
+
+47
+00:04:26,250 --> 00:04:30,810
+Ahora colocÃ¡ndonos a una distancia diferente pero igual desde el inicio vamos a ponerle por ejemplo
+
+48
+00:04:30,890 --> 00:04:42,870
+M ese punto sic vamos a colocarnos que les parece a 5 distancias igualmente desde lo que es el inicio.
+
+49
+00:04:42,870 --> 00:04:52,950
+Usamos Billing y decimos que nos estamos colocando a 5 distancia del inicio.
+
+50
+00:04:53,070 --> 00:05:01,740
+Leemos con Ried y lo vamos a leer desde lo que es buffer como no queremos modificar la posiciÃ³n que
+
+51
+00:05:01,740 --> 00:05:02,940
+ya pusimos en esta parte.
+
+52
+00:05:02,970 --> 00:05:06,670
+Entonces vamos a ponerle 0 y ahora vamos a leer 6 bits.
+
+53
+00:05:06,930 --> 00:05:13,170
+Cerramos con Puti Koma y para mostrarlo vamos a usar lo mismo de aquÃ­ vamos a comentar lo que es el
+
+54
+00:05:13,170 --> 00:05:16,270
+primer ejemplo para que no nos estorbe en esta parte.
+
+55
+00:05:16,800 --> 00:05:18,640
+Recuerden que lo somos desde esta tecla.
+
+56
+00:05:18,640 --> 00:05:26,700
+AquÃ­ vamos a compilar y ejecutar el programa Vamos a darle una cadena parecida decimos hola este es
+
+57
+00:05:27,900 --> 00:05:32,920
+el primer ejemplo enter y nos dice que la capacidad es de 70.
+
+58
+00:05:32,940 --> 00:05:39,510
+La longitud es de 31 y ahora nos estamos colocando a 5 posiciones desde el inicio es decir una dos tres
+
+59
+00:05:39,510 --> 00:05:47,580
+cuatro cinco es la coma y empieza a leer desde el bit que sigue es decir el espacio y le 6:20 1 2 3
+
+60
+00:05:47,700 --> 00:05:52,830
+4 5 y 6 y lo tenemos aquÃ­ el espacio 1 2 3 4.
+
+61
+00:05:52,920 --> 00:05:59,100
+Con este 5 y el espacio que tiene aquÃ­ 6 no lo muestra claramente pues aquÃ­ no lo pueden ver porque
+
+62
+00:05:59,100 --> 00:06:04,760
+no tenemos nada pero nos podemos asegurar de que estÃ¡ tomando 6 points.
+
+63
+00:06:04,980 --> 00:06:10,650
+Vamos de nuevo a comentar esta parte de aquÃ­ y vamos a ver un Ãºltimo ejemplo ahora lo vamos a hacer
+
+64
+00:06:10,770 --> 00:06:12,390
+desde lo que es la posiciÃ³n final.
+
+65
+00:06:13,140 --> 00:06:24,090
+Entonces decimos MS punto sic y queremos que se coloque al menos 17 posiciones de lo que es el final.
+
+66
+00:06:24,900 --> 00:06:32,070
+Entonces ponemos en recuerden que usamos el signo de menos porque supongamos que esta es nuestra cadena
+
+67
+00:06:32,160 --> 00:06:38,510
+nos estamos colocando en el final y desde ahÃ­ empezamos a restar posiciones es decir vamos a restar
+
+68
+00:06:38,520 --> 00:06:40,980
+las menos 17 posiciones desde el final.
+
+69
+00:06:40,980 --> 00:06:43,200
+Por eso usamos el signo de menos.
+
+70
+00:06:43,320 --> 00:06:51,900
+Ahora sÃ­ podemos empezar a leer con lo que es M ese punto Riet lo vamos a leer desde el buffer no queremos
+
+71
+00:06:51,900 --> 00:06:57,480
+modificar la posiciÃ³n que ya tenÃ­amos en esta parte de acÃ¡ entonces dejamos cero y vamos a leer unos
+
+72
+00:06:57,750 --> 00:06:59,220
+8 caracteres de serie.
+
+73
+00:06:59,400 --> 00:07:06,410
+Y cerramos con punto y coma y podemos mostrar de nuevo la informaciÃ³n vamos a compilar y ejecutar y
+
+74
+00:07:06,430 --> 00:07:07,700
+ponemos Hola.
+
+75
+00:07:07,840 --> 00:07:16,960
+Este es el primer ejemplo volvemos a tener la longitud de 31 la posiciÃ³n de 31 y vamos a ver si se colocÃ³
+
+76
+00:07:17,020 --> 00:07:18,740
+a menos 17 posiciones.
+
+77
+00:07:18,980 --> 00:07:31,260
+Decimos una 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 y 17 ok.
+
+78
+00:07:31,290 --> 00:07:37,830
+La posiciÃ³n menos 17 desde el final es este espacio en blanco que tenemos aquÃ­ y desde ahÃ­ va a empezar
+
+79
+00:07:37,830 --> 00:07:38,970
+a leer 8 bits.
+
+80
+00:07:39,270 --> 00:07:48,150
+Entonces es 1 2 3 4 5 6 7 y 8 hasta donde dice Prime sin la r y vemos que efectivamente nos lo muestra
+
+81
+00:07:48,150 --> 00:07:49,610
+aquÃ­ dice el espacio.
+
+82
+00:07:49,620 --> 00:07:55,860
+Primero vemos que funciona tambiÃ©n muy bien esta parte de sic origen punto en pero recuerden que no
+
+83
+00:07:55,860 --> 00:07:58,690
+tienen que olvidar el signo negativo en la distancia.
+
+84
+00:07:58,690 --> 00:08:03,870
+Como ya no queremos continuar leyendo ningÃºn tipo de informaciÃ³n lo que tenemos que hacer por Ãºltimo
+
+85
+00:08:03,930 --> 00:08:05,190
+es cerrar el stream.
+
+86
+00:08:05,220 --> 00:08:08,750
+Recuerden que se los mostrÃ© en la clase con el mÃ©todo Kloss.
+
+87
+00:08:08,940 --> 00:08:19,920
+Entonces ponemos un comentario de que estamos cerrando el flujo usamos el nombre del stream que es MS
+
+88
+00:08:20,340 --> 00:08:25,400
+y ponemos clocks no tiene parÃ¡metros y Ãºnicamente cerramos con un punto ICO.
+
+89
+00:08:25,650 --> 00:08:30,180
+Esto serÃ­a todo en el programa de ejemplo recuerden que les dejo el cÃ³digo los recursos de la clase
+
+90
+00:08:30,270 --> 00:08:33,510
+y vamos a continuar posteriormente con lo que es el uso de archivos.
+                                                                                     ƒ< u‹M‹ÿP$‰G<‹O<…É„I  ‹GHÑè‰A‹OL‹G<Ñé‰H‹M¼‹G<Áé‰H‹K…Ét‹I<ë3É‹UðRÿPL‹O<‹ ƒÁ(Q‰‹G<‹ÏÇ@D    ‹ÄÇ     èh  ‹O<‰AH‹O<‹E´‰A‹O<‹E ‰A ‹O<‹E¸‰A‹O<‹EÈ‰A8ÇA<    ‹K…Ét‹I<ë3É‹‹€¼   ÿÐ„À„‘   ƒD u‹M‹ÿP$‰GD‹OD…Éty‹G<‹@‰A‹G<‹OD‹@‰A‹G<‹OD‹@‰A‹G<‹OD‹@(‰A(‹G<‹OD‹@D‰AD‹G<‹OD‹@H‰AH‹G<‹OD‹@‰A‹G<‹OD‹@ ‰A ‹G<‹OD‹@‰A‹OD‹EÌ‰A8ÇA<    »   ˆ_Wˆ_`ë‹](ƒûuAÿu8ÿu4ÿu$ÿuÿuQ‹Äÿu‰0Q‹ÏèB   ‹Ã_^[‹å]Â4 ‹Ï3Ûè.ùÿÿ‹Ã_^[‹å]Â4 ‹](‹Ïèùÿÿ_^‹Ã[‹å]Â4 ÌÌÌÌÌÌÌÌÌÌÌÌÌÌU‹ìƒìSV‹ñW‹MüQ‹ÎÇEì”œ@ ‰uðÿP(3Éƒ8ÇEø    ”Á‰MôMìèæôÿÿ…À„  ‹}‹]ë›    ‹M‰H‹M ‰H0‹M$‰H4€~` u‹M‰H‹M‰H ƒx ‰x$‰X,‡´   ƒ=¸v  …€   jhH	  è¬î ƒÄ…ÀtcÇ@”œ@ WÀfÖ@fÖ@Ç@    fÇ@  fÖ@fÖ@&Ç@.    fÇ@2  3ÉÆ@4 ‰H5f‰H9‰H<‹ÈÇ ¡@ £¼v ÿ(¡@ ÿ¸v ë
+Ç¼v     ‹¼v h1  h·®2rQ‹ÄQÇ    ‹ÄÇ Q   ‹ÿP$Mìèàóÿÿ…À…ÿÿÿƒ~huÆFV _^[‹å]Â  ÌÌÌÌÌU‹ìì   ‹ES‹Ù‹HV‹uW‹}‰]ø…Ét‹I0ë3Éÿu(‰MðP‹ËèÚùÿÿ‰Eôƒø…  ‹Cd=­*  ¸  =«*  ©  Hƒø‡Ë  ¶€°– ÿ$…Œ– ‹C8‹MÑé‰H‹C8ÇEô   Ç@   ‹C8Ç@(   é’  ‹C8‹MÑé‰H‹C8ÇEô   Ç@   ‹C8Ç@(
+   ég  ‹K8‹E‰A‹C8ÇEô   Ç@   ‹C8Ç@(   é>  ‹C8‹MÑé‰H‹C8ÇEô   Ç@   ‹C8Ç@(   é  ‹C8‹MÁé‰H‹C8ÇEô   Ç@   ‹C8Ç@(#   éç  ‹M‹IDQ‹ÄÇ    ‹‹@ ÿÐ„À„É  ‹K8‹CH‰A‹K8‹CL‰A‹C8Ç@   ‹E‹H…Ét‹I<ë3É‹UˆRÿPH‹ ‹K8‰A(‹C8‹MÇ@D    ‹C8‰H‹C8‹M(‰H‹K8‹E‰A ‹K8‹E‰A‹C8Ç@8    Ç@<    ƒ{< u‹Mð‹ÿP$‰C<‹K<…É„0  ‹CHÑè‰A‹KL‹C<Ñé‰H‹C<Ç@   ‹E‹@…Àt‹H<ë3É‹•|ÿÿÿRÿPL‹K<‹ ƒÁ(Q‰‹C<‹ËÇ@D    ‹ÄÇ     èR  ‹K<ÇEô   ‰AH‹C<‹MÑé‰H‹K<‹E ‰A ‹C<‹M(Ñé‰H‹M¯M(‹C<‰H8Ç@<    ‹K<‹EƒÁ‰€{a ÆCWÆC`„u
+  ‹E‹H…Ét‹I<ë3É‹‹€1
+00:00:00,

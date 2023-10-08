@@ -19,7 +19,7 @@ interface fileImg {
 
 }
 
-interface Tecnico {
+ export interface Tecnico {
     id: string;
     name: string
 }
@@ -192,7 +192,7 @@ export const EntradaArticulo = () => {
 
     const create = async () => {
 
-        if(!name || !identification || !telefono || !correo || !equipo || !serial || !costoReparacion || !costoRepuesto) return alert('Completa todos los campos')
+        if(!name || !identification || !telefono || !correo || !equipo || !serial || !costoReparacion || !costoRepuesto) return 
         setIsLoading(true)
         const db = getFirestore(app);
         const coll = collection(db, 'Entrada');
@@ -281,6 +281,7 @@ export const EntradaArticulo = () => {
                                     <a className="dropdown-item pointer" onClick={() => setNameSelect({ name: res.name, id: res.id })} >{res.name}</a>
                                 )))
                             }
+                               <a className="dropdown-item pointer" onClick={() => setNameSelect({ name: 'No definido', id: '0' })} > No definido</a>
 
 
                         </div>
@@ -318,38 +319,38 @@ export const EntradaArticulo = () => {
 
 
 
-                <form>
+                <form className="row col-10 g-3 needs-validation was-validated" noValidate>
                     <div className="row">
                         <div className="col-auto form-group">
 
-                            <input value={name.toUpperCase()}  placeholder='Nombre' onChange={(e) => onChangeForm(e.target.value, 'name')} type="text" className='p-2 form-control ' />
+                            <input value={name}  placeholder='Nombre' onChange={(e) => onChangeForm(e.target.value, 'name')} type="text" required className='p-2 form-control ' />
                         </div>
                         <div className="col-auto form-group">
 
-                            <input value={identification} placeholder='Identificacion' onChange={(e) => onChangeForm(e.target.value, 'identification')} type="text" className='p-2 form-control ' />
+                            <input value={identification} placeholder='Identificacion' onChange={(e) => onChangeForm(e.target.value,   'identification')}  required type="text" className='p-2 form-control ' />
                         </div>
                     </div>
 
                     <div className="row  ">
                         <div className="col-auto form-group">
 
-                            <input value={telefono}  placeholder='Telefono' onChange={(e) => onChangeForm(e.target.value, 'telefono')} type='text' className='p-2 form-control' />
+                            <input value={telefono}  placeholder='Telefono' onChange={(e) => onChangeForm(e.target.value, 'telefono')} type='text' required className='p-2 form-control' />
                         </div>
                         <div className="col-auto form-group">
 
-                            <input value={correo} placeholder='Correo' onChange={(e) => onChangeForm(e.target.value, 'correo')} type="text" className='p-2 form-control' />
+                            <input value={correo} placeholder='Correo' onChange={(e) => onChangeForm(e.target.value, 'correo')} type="text" required className='p-2 form-control' />
                         </div>
                     </div>
 
                     <div className="row  mb-4">
                         <div className="col-auto">
 
-                            <input value={equipo.toUpperCase()} placeholder='Equipo' onChange={(e) => onChangeForm(e.target.value, 'equipo')} type="text" className='p-2 form-control' />
+                            <input value={equipo.toUpperCase()} placeholder='Equipo' onChange={(e) => onChangeForm(e.target.value, 'equipo')} required type="text" className='p-2 form-control' />
                         </div>
 
                         <div className="col-auto">
 
-                            <input value={serial} placeholder='Serial' onChange={(e) => onChangeForm(e.target.value, 'serial')} type="text" className='p-2 form-control' />
+                            <input value={serial} placeholder='Serial' onChange={(e) => onChangeForm(e.target.value, 'serial')} type="text" required className='p-2 form-control' />
                         </div>
                     </div>
 
@@ -609,7 +610,7 @@ export const EntradaArticulo = () => {
                                 <td className='text-color p-2' width="50%">
 
                                     <div className="form-group">
-                                        <input type="text" className='form-control' min={1} value={costoRepuesto} onChange={(e) => onChangeForm(e.target.value, 'costoRepuesto')} placeholder='$ 0.00' />
+                                        <input type="number" className='form-control' min={1} value={costoRepuesto} onChange={(e) => onChangeForm(e.target.value, 'costoRepuesto')} placeholder='$ 0.00' />
                                     </div>
 
                                 </td>
@@ -621,7 +622,7 @@ export const EntradaArticulo = () => {
                                 <td colSpan={2} className='text-color p-2'>
 
                                     <div className="form-group">
-                                        <input type="text" min={1} className='form-control' value={costoReparacion} onChange={(e) => onChangeForm(e.target.value, 'costoReparacion')} placeholder='$ 0.00' />
+                                        <input type="number" min={1} className='form-control' value={costoReparacion} onChange={(e) => onChangeForm(e.target.value, 'costoReparacion')} placeholder='$ 0.00' />
                                     </div>
                                 </td>
                             </tr>
@@ -664,6 +665,11 @@ export const EntradaArticulo = () => {
 
 
                 </div>
+
+
+                
+ 
+
 
                 
 

@@ -90,6 +90,8 @@ export const Local = () => {
 
 
 
+
+
   const click = () => {
     const tr = document.querySelectorAll('.local')
     tr.forEach(el => {
@@ -148,13 +150,13 @@ export const Local = () => {
                   e.stopPropagation()
                   const a = document.getElementById(index.toString())
                   disActive()
-                  a!.classList.add('bg-main-2')
+                a!.classList.add('bg-main-2')
                   a?.classList.add('border')
                   login(resp.idLocal)
              
 
-                }} key={index} className={(resp.idLocal == idLoca) ? 'pointer bg-main-2 local' : 'pointer local'} >
-                  <th scope="row" className={''}>{resp.name}</th>
+                }} key={index} className={(resp.idLocal == idLoca) ? 'pointer bg-primary ':''} >
+                  <td scope="row" className={''}>{resp.name}</td>
                 </tr>
               )))
             }

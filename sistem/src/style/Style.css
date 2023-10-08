@@ -4,6 +4,7 @@
     font-family: Arial, Helvetica, sans-serif;
     box-sizing: border-box;
     user-select: none;
+ 
 }
 
 body {
@@ -627,7 +628,7 @@ body {
 
 .d-mobile-none {
     display: none;
-    background-color: red;
+   
 }
 
 @media (max-width:535px) {

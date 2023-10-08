@@ -29,9 +29,12 @@ export const Productos = () => {
     const [Title, setTitle] = useState('')
     const [Description, setDescription] = useState('')
     const [PCompra, setPCompra] = useState('')
+    const [StockDisponible, setStockDisponible] = useState<string>('')
     const [PVenta, setPVenta] = useState('')
     const [Existencia, setExistencia] = useState('')
 
+    const [Cant, setCant] = useState('')
+    const [ProductId, setProductId] = useState('')
     const [LocalImg, setLocalImg] = useState<any>(null)
 
     useEffect(() => {
@@ -116,7 +119,8 @@ export const Productos = () => {
                     precio: data.get('precio'),
                     existencia: data.get('existencia'),
                     pCompra: data.get('priceCompra'),
-                    img: data.get('img')
+                    img: data.get('img'),
+                    estado:data.get('estado')
                 }
             })
             setProducto(Productos);
@@ -129,6 +133,9 @@ export const Productos = () => {
         const coll = doc(db, 'Producto', id);
         deleteDoc(coll);
     }
+
+
+
     const updateProd = async (id: string) => {
         const db = getFirestore(app);
         const coll = doc(db, 'Producto', id);
@@ -152,163 +159,96 @@ export const Productos = () => {
             })
         }
 
-
-    }
-
-    const createProd = async () => {
-        const db = getFirestore(app);
-        const coll = collection(db, 'Producto');
-        setIsLoading(true)
-        if (file) {
-            const img = await getFile(file)
-
-            addDoc(coll, {
-                codigo: Title,
-                description: Description,
-                precio: PVenta,
-                existencia: Existencia,
-                priceCompra: PCompra,
-                timestamp: new Date().getTime(),
-                idLocal: idLoca,
-                img: img.fileUri
-            })
-
-        } else {
-            addDoc(coll, {
-                codigo: Title,
-                description: Description,
-                precio: PVenta,
-                existencia: Existencia,
-                priceCompra: PCompra,
-                timestamp: new Date().getTime(),
-                idLocal: idLoca,
-                img: ''
-            })
-
-        }
         setDescription('')
         setTitle('')
         setPCompra('')
         setPVenta('')
-        setLocalImg(null)
-        setIsLoading(false)
+        setExistencia('')
+
+
+    }
+
+
+
+    const publicarProducto = (id: string) => {
+        if(!StockDisponible) return
+        const db = getFirestore(app);
+        const coll = doc(db, 'Producto', id);
+        updateDoc(coll, {
+            estado: 'publicado',
+         
+        })
+
+        const productoPublicado = collection(db, 'productoPublicado');
+        addDoc(productoPublicado, {
+            productId: id,
+            existencia: StockDisponible
+        })
+
+
+
+    }
+
+    const createProd = async () => {
+        if (!Description || !Existencia || !PCompra || !PVenta) return
+        setIsLoading(true)
+        const db = getFirestore(app);
+        const coll = collection(db, 'Producto');
+
+        if (getProdById?.id != null) {
+            updateProd(getProdById.id)
+        } else {
+            if (file) {
+                const img = await getFile(file)
+
+                addDoc(coll, {
+                    codigo: Title,
+                    description: Description,
+                    precio: PVenta,
+                    existencia: Existencia,
+                    priceCompra: PCompra,
+                    timestamp: new Date().getTime(),
+                    idLocal: idLoca,
+                    img: img.fileUri,
+                    estado: 'no-publicado'
+                })
+
+            } else {
+                addDoc(coll, {
+                    codigo: Title,
+                    description: Description,
+                    precio: PVenta,
+                    existencia: Existencia,
+                    priceCompra: PCompra,
+                    timestamp: new Date().getTime(),
+                    idLocal: idLoca,
+                    img: '',
+                    estado: 'no-publicado'
+                })
+
+            }
+            setDescription('')
+            setTitle('')
+            setPCompra('')
+            setPVenta('')
+            setExistencia('')
+            setLocalImg(null)
+            setIsLoading(false)
+
+        }
+
+
 
     }
 
 
     return (
-        <div className='hidden'>
+        <div className='hidden m-2'>
 
 
-            <div className=' mr-4  ml-4 mt-4 border hidden '>
-                <h6 className='title-prod p-2'>Registrar Productos</h6>
-                <div className="row align-items-start p-2 bg-main">
-                    <div className="col-lg-9">
-                        <div className="row">
+            <div className=' mr-4  ml-4 mt-4  hidden '>
 
-
-
-                            <div className="col-lg-2">
-                                <p className='text-white'>Titulo</p>
-                                <form action="" className='form-group'>
-                                    <input value={Title} onChange={(e) => setTitle(e.target.value)} className='form-control' type="text" />
-                                </form>
-                            </div>
-
-                            <div className="col-lg-4">
-                                <p className='text-white'>Descripciopn</p>
-                                <form action="" className='form-group'>
-                                    <input value={Description} onChange={(e) => setDescription(e.target.value)} className='form-control' type="text" />
-                                </form>
-                            </div>
-                            <div className="col-lg-2">
-                                <p className='text-white'>Precio Venta</p>
-                                <form action="" className='form-group'>
-                                    <input value={PVenta} onChange={(e) => setPVenta(e.target.value)} className='form-control' type="number" />
-                                </form>
-                            </div>
-
-
-
-                        </div>
-
-
-
-
-                        <div className="row align-items-start p- bg-main">
-
-
-
-                            <div className="col-lg-2">
-                                <p className='text-white'>Precio Compra</p>
-                                <form action="" className='form-group'>
-                                    <input value={PCompra} onChange={(e) => setPCompra(e.target.value)} className='form-control' type="number" />
-                                </form>
-                            </div>
-
-                            <div className="col-3">
-                                <p className='text-white'>Existencia</p>
-                                <form action="" className='form-group'>
-                                    <input value={Existencia} onChange={(e) => setExistencia(e.target.value)} className='form-control' type="number" />
-                                </form>
-                            </div>
-
-
-
-                            <div className="col-auto mt-5 mr-4">
-
-
-                                <input type="file" onChange={(e) => cargarImagen(e.target.files!)} accept='image/*' className='text-color' />
-                            </div>
-
-
-                            <div className="col mt-5">
-                                <button onClick={() => createProd()} className='btn btn btn-outline-light bg-main'>Guardar</button>
-                            </div>
-                        </div>
-
-
-
-
-                    </div>
-
-
-
-
-
-                    <div className="col-lg-2 ">
-                        <div className="row border p-2 rounded">
-                            <div className="col">
-                                <div className="row justify-content-between">
-                                    <div className="col">
-                                        <h4 className=' text-white text-center'>Imagen</h4>
-                                    </div>
-                                    <div className="col">
-
-                                        {
-                                            (file) && <button onClick={() => { setfile(undefined); setLocalImg(null) }} type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                                <span className='text-white' aria-hidden="true">&times;</span>
-                                            </button>
-                                        }
-
-
-                                    </div>
-                                </div>
-
-                                <img className={(file) && 'img-thumbnail'} src={LocalImg} />
-
-                            </div>
-                        </div>
-
-                    </div>
-
-
-
-
-
-
-
-                </div>
+                <span className='btn btn-primary' data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Nuevo</span>
 
 
 
@@ -329,30 +269,42 @@ export const Productos = () => {
                 <table className="table table-dark table-hover ">
                     <thead>
                         <tr>
+                        <th className='text-mobile text-table' scope="col"></th>
+
                             <th className='text-mobile text-table' scope="col">Titulo</th>
+                            
                             <th className='text-mobile text-table' scope="col">Description</th>
+                            <th className='text-mobile text-table' scope="col">Estado</th>
                             <th className='text-mobile text-table' scope="col">P.Compra</th>
                             <th className='text-mobile text-table' scope="col">P.venta</th>
                             <th className='text-mobile text-table' scope="col">Existencia</th>
+                            <th className='text-mobile text-table' scope="col">Publicar</th>
                             <th className='text-mobile text-table' scope="col">Editar</th>
                             <th className='text-mobile text-table' scope="col">Eliminar</th>
-                            <th className='text-mobile text-table' scope="col"></th>
                         </tr>
                     </thead>
                     <tbody >
                         {
                             producto.map((resp, index) => (
                                 <tr key={index}>
+                                <td className='text-mobile text-table' > <img className='img-thumbnail'  width={80} style={{ objectFit: 'cover' }} src={resp.img} /></td>
+
                                     <th className='text-mobile text-table' scope="row"><a className='code-link' >{resp.codigo}</a></th>
 
 
                                     <td className='text-mobile text-table' >{resp.description.toUpperCase()}</td>
-                                    <td className='text-mobile text-table' >{Number(resp.pCompra).toLocaleString('es')}</td>
-                                    <td className='text-mobile text-table' >{Number(resp.precio).toLocaleString('es')}</td>
+                                    
+                                    <td className='text-mobile text-table' >{resp.estado}</td>
+                                    <td className='text-mobile text-table' >{Number(resp.pCompra).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+                                    <td className='text-mobile text-table' >{Number(resp.precio).toLocaleString('es',{style:'decimal',minimumFractionDigits:2,maximumFractionDigits:2})}</td>
                                     <td className='text-mobile text-table' >{resp.existencia}</td>
+
+                                    <td className='text-mobile text-table' ><a href="#" onClick={() => setProductId(resp.id)} data-toggle="modal" data-target="#modalDeleItem" data-whatever="@mdo" className='btn btn-success'>Publicar</a></td>
+
                                     <td className='text-mobile text-table' ><a href="#" onClick={() => getById(resp.id)} className='btn btn-success' data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Editar</a></td>
                                     <td className='text-mobile text-table' ><a href="#" onClick={() => Eliminar(resp.id)} className='btn btn-danger'>Eliminar</a></td>
-                                    <td className='text-mobile text-table' > <img width={50} style={{ objectFit: 'cover' }} src={resp.img} /></td>
+
+
                                 </tr>
 
                             ))
@@ -375,40 +327,84 @@ export const Productos = () => {
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Editar Producto</h5>
+                            <h5 className="modal-title" id="exampleModalLabel">Producto</h5>
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div className="modal-body">
-                            <form>
+                            <form className='g-3 needs-validation was-validated' noValidate>
+
                                 <div className="form-group">
-                                    <label className="col-form-label">Codigo</label>
-                                    <input value={Title} onChange={(e) => setTitle(e.target.value)} type="text" className="form-control" id="recipient-name" />
+                                    <div className="col-lg-4 ">
+                                        <div className="row border p-2 rounded">
+                                            <div className="col-lg-12">
+                                                <div className="row justify-content-between">
+                                                    <div className="col-6">
+                                                        <h6 className=' text-muted text-center'>Imagen</h6>
+                                                    </div>
+                                                    <div className="col-6">
+
+                                                        {
+                                                            (file) && <button onClick={() => { setfile(undefined); setLocalImg(null) }} type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                                                <span className='text-black' aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        }
+
+
+                                                    </div>
+                                                </div>
+
+                                                <img className={(file) && 'img-thumbnail'} src={LocalImg} />
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div className="form-group">
+
+
+                                    <div className="col-lg-2">
+
+                                        <div className="col-auto mt-5 mr-4">
+
+
+                                            <input type="file" onChange={(e) => cargarImagen(e.target.files!)} accept='image/*' className='text-color' />
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                                <div className="form-group">
+                                    <label className="col-form-label">Titulo</label>
+                                    <input value={Title} onChange={(e) => setTitle(e.target.value)} required type="text" className="form-control" id="recipient-name" />
                                 </div>
                                 <div className="form-group">
                                     <label className="col-form-label">Descripcion</label>
-                                    <input value={Description} onChange={(e) => setDescription(e.target.value)} type="text" className="form-control" id="recipient-name" />
+                                    <input value={Description} onChange={(e) => setDescription(e.target.value)} required type="text" className="form-control" id="recipient-name" />
                                 </div>
                                 <div className="form-group">
                                     <label className="col-form-label">Precio</label>
-                                    <input value={PCompra} onChange={(e) => setPCompra(e.target.value)} type="text" className="form-control" id="recipient-name" />
+                                    <input value={PCompra} onChange={(e) => setPCompra(e.target.value)} required type="number" className="form-control" id="recipient-name" />
                                 </div>
                                 <div className="form-group">
                                     <label className="col-form-label">Precio de venta</label>
-                                    <input value={PVenta} onChange={(e) => setPVenta(e.target.value)} type="text" className="form-control" id="recipient-name" />
+                                    <input value={PVenta} onChange={(e) => setPVenta(e.target.value)} required type="number" className="form-control" id="recipient-name" />
                                 </div>
                                 <div className="form-group">
                                     <label className="col-form-label">Existencia</label>
-                                    <input value={Existencia} onChange={(e) => setExistencia(e.target.value)} type="text" className="form-control" id="recipient-name" />
+                                    <input value={Existencia} onChange={(e) => setExistencia(e.target.value)} required type="text" className="form-control" id="recipient-name" />
                                 </div>
 
 
                             </form>
                         </div>
                         <div className="modal-footer">
-                           
-                            <button type="button" className="btn btn-primary" onClick={() => updateProd(getProdById!.id)} data-dismiss="modal">Guardar</button>
+
+                            <button type="submit" className="btn btn-color" onClick={() => createProd()} data-dismiss={(Description && PCompra && PVenta && Existencia) && 'modal'}>Guardar</button>
                         </div>
                     </div>
                 </div>
@@ -418,6 +414,40 @@ export const Productos = () => {
             {
                 (IsLoading) && <Indicators />
             }
+
+            <div className="modal fade" id="modalDeleItem" tabIndex={-1} role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Publicar producto</h5>
+                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="container">
+                                <div className="row">
+                                    <div className="col-12 mb-3">
+                                        <form action="" className='needs-validation was-validated' noValidate>
+                                            <input type="text" placeholder='Stock disponible a publicar' required className='form-control' />
+                                        </form>
+                                    </div>
+                                </div>
+                                <div className="row justify-content-around">
+                                    <div className="col-4">
+                                        <a data-dismiss={ (StockDisponible) &&  "modal"} aria-label={  (StockDisponible) &&  "Close"} onClick={()=>publicarProducto(ProductId)} className="btn btn-warning text-white">Publicar</a>
+                                    </div>
+                                    <div className="col-4">
+                                        <a className="btn btn-warning text-white" data-dismiss="modal" aria-label="Close">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 
 
 

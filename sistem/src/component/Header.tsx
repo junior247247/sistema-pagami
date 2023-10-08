@@ -15,7 +15,7 @@ export const Header = () => {
 
 
   return (
-    <header className="d-flex  border-bottom align-items-center justify-content-between">
+    <header className="d-flex m-2  border-bottom align-items-center justify-content-between">
       <div className="menu" onClick={showLateral}>
           <div className="menu-line "/>
           <div className="menu-line "/>

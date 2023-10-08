@@ -2,14 +2,20 @@ import React, { useEffect, useContext, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { context } from '../hooks/AppContext'
 
-import { getFirestore, collection, orderBy, where, onSnapshot, query, doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, orderBy, where, onSnapshot, query, doc, updateDoc, getDoc, setDoc, addDoc } from 'firebase/firestore';
 import { app } from '../Firebase/conexion';
 import { Entrada } from '../entidades/Entrada';
 import { async } from '@firebase/util';
+import { Indicators } from './indicator/Indicators';
 
 
 
-
+interface Resenas{
+  equipo:string;
+  estado:string;
+  total:string;
+  fecha:string
+}
 
 
 export const Salida = () => {
@@ -18,100 +24,129 @@ export const Salida = () => {
   const { idLoca } = state;
   const [Data, setData] = useState<Entrada[]>([]);
   const [FilterData, setFilterData] = useState<Entrada[]>([]);
-  const [IsVisible, setIsVisible] = useState({ id: '', isVisible: false, idTecnico: '' })
+  const [IsVisible, setIsVisible] = useState({ id: '', isVisible: false, idTecnico: '', estado: '',equipo:'' })
   const [ImagenTitulo, setImagenTitulo] = useState({ img: '', titulo: '' })
+  const [Resena, setResena] = useState<string>('')
+  const [IsLoading, setIsLoading] = useState(false)
+
+
 
   const noReparado = async (id: string) => {
-    const db = getFirestore(app);
-    const coll = collection(db, 'Entrada');
-    const document = doc(coll, id);
 
 
-    const respDoc = getDoc(document);
-
-    const res = await respDoc;
-
-    const costoReparacion = res.get('costoReparacion')
-    updateDoc(document, {
-      estado: 'Retirado',
-      subestado: 'no reparado'
-    })
-
-
-    setIsVisible({ isVisible: false, id: '', idTecnico: '' })
-
-    const collTecDinero = collection(db, 'DineroTecnico');
-    const documentTec = doc(collTecDinero, IsVisible.idTecnico);
-    const resolve = getDoc(documentTec);
-    const respTec = await resolve;
-    if (respTec.exists()) {
-
-      let money: number = respTec.get('money');
-      money += Number(costoReparacion);
-      updateDoc(documentTec, {
-        money
+    try {
+      if(!Resena)return
+      setIsLoading(true)
+      const db = getFirestore(app);
+      const coll = collection(db, 'Entrada');
+      const document = doc(coll, id);
+      const respDoc = getDoc(document);
+      const res = await respDoc;
+      const costoReparacion = res.get('costoReparacion')
+      updateDoc(document, {
+        estado: 'Retirado',
+        subestado: 'no reparado',
       })
-    } else {
+      const resena = collection(db, 'Resena');
+      const year=new Date().getFullYear()
+      const day=new Date().getDay()
+      const month=new Date().getMonth()
+      addDoc(resena, {
+        idTecnico: IsVisible.idTecnico,
+        resena: Resena,
+        total: (IsVisible.estado != 'reparado') ? 0 : Number(costoReparacion),
+        estado:'no reparado',
+        timestamp:new Date().getTime(),
+        equipo:IsVisible.equipo,
+        fecha:day.toString()+'-' + month.toString()+'-'+ year.toString()
 
 
-      setDoc(doc(db, 'DineroTecnico', IsVisible.idTecnico!), {
-        idLocal: idLoca,
-        money: costoReparacion
       })
 
+      const collTecDinero = collection(db, 'DineroTecnico');
+      const documentTec = doc(collTecDinero, IsVisible.idTecnico);
+      const resolve = getDoc(documentTec);
+      const respTec = await resolve;
+      if (respTec.exists()) {
+        let money: number = respTec.get('money');
+        money += Number(costoReparacion);
+        updateDoc(documentTec, {
+          money
+        })
+      } else {
+        setDoc(doc(db, 'DineroTecnico', IsVisible.idTecnico!), {
+          idLocal: idLoca,
+          money: costoReparacion
+        })
+      }
+      setIsVisible({ isVisible: false, id: '', idTecnico: '', estado: '',equipo:'' })
+      setIsLoading(false)
+    } catch (error) {
+      setIsLoading(false)
     }
-
-
-
-
-
-
   }
 
 
 
   const Reparado = async (id: string) => {
-    const db = getFirestore(app);
-    const coll = collection(db, 'Entrada');
-    const document = doc(coll, id);
+    try {
+      
+      if(!Resena)return
+      setIsLoading(true)
+      const db = getFirestore(app);
+      const coll = collection(db, 'Entrada');
+      const document = doc(coll, id);
+      const respDoc = getDoc(document);
+
+      const res = await respDoc;
 
 
-    const respDoc = getDoc(document);
 
-    const res = await respDoc;
+      const costoReparacion = res.get('costoReparacion')
+      const collTecDinero = collection(db, 'DineroTecnico');
+      console.log(IsVisible.idTecnico)
+      const documentTec = doc(collTecDinero, IsVisible.idTecnico);
+      const resolve = getDoc(documentTec);
+      const respTec = await resolve;
+  
 
-    const costoReparacion = res.get('costoReparacion')
-    updateDoc(document, {
-      estado: 'Retirado',
-      subestado: 'reparado'
-    })
+     const documentRes = collection(db, 'Resena');
+      addDoc(documentRes, {
+        idTecnico: IsVisible.idTecnico,
+        resena: Resena,
+        estado: 'reparado',
+        total:  Number(costoReparacion),
+        timestamp:new Date().getTime(),
+        equipo:IsVisible.equipo,
+        fecha:new Date()
 
 
-    setIsVisible({ isVisible: false, id: '', idTecnico: '' })
-
-    const collTecDinero = collection(db, 'DineroTecnico');
-    const documentTec = doc(collTecDinero, IsVisible.idTecnico);
-    const resolve = getDoc(documentTec);
-    const respTec = await resolve;
-    if (respTec.exists()) {
-
-      let money: number = respTec.get('money');
-      money += Number(costoReparacion);
-      updateDoc(documentTec, {
-        money
       })
-    } else {
 
-
-      setDoc(doc(db, 'DineroTecnico', IsVisible.idTecnico!), {
-        idLocal: idLoca,
-        money: costoReparacion
+      updateDoc(document, {
+        estado: 'Retirado',
+        subestado: 'reparado'
       })
+      if (respTec.exists()) {
+        let money: number = respTec.get('money');
+        money += Number(costoReparacion);
+        updateDoc(documentTec, {
+          money
+        })
+      } else {
+        setDoc(doc(db, 'DineroTecnico', IsVisible.idTecnico!), {
+          idLocal: idLoca,
+          money: costoReparacion
+        })
+
+      }
+      setIsVisible({ isVisible: false, id: '', idTecnico: '', estado: '',equipo:'' })
+      setIsLoading(false)
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
 
     }
-
-
-
 
 
 
@@ -140,7 +175,8 @@ export const Salida = () => {
           estado: resp.get('estado'),
           noFact: resp.get('noFact'),
           img: resp.get('fileUri'),
-          subestado: resp.get('subestado')
+          subestado: resp.get('subestado'),
+          idTecnico:resp.get('idTecnico')
 
         }
       })
@@ -210,7 +246,7 @@ export const Salida = () => {
                   <td className='text-mobile text-table table-desk-header' >{resp.costoRepuesto}</td>
                   <td className='text-mobile text-table table-desk-header' >{resp.total}</td>
                   <td className='text-mobile text-table table-desk-header' >{resp.correo}</td>
-                  <td className='text-mobile text-table table-desk-header' ><span className="label-status bg-success btn" data-toggle="modal" data-target="#listoParaEntrega" data-whatever="@mdo" onClick={() => setIsVisible({ id: resp.id, isVisible: true, idTecnico: resp.idTecnico! })}>{resp.estado}</span></td>
+                  <td className='text-mobile text-table table-desk-header' ><span className=" btn btn-warning" data-toggle="modal" data-target="#listoParaEntrega" data-whatever="@mdo" onClick={() => setIsVisible({ id: resp.id, isVisible: true, idTecnico: resp.idTecnico!, estado: resp.estado,equipo:resp.equipo })}>{resp.estado}</span></td>
                 </tr>
 
               ))
@@ -233,10 +269,11 @@ export const Salida = () => {
               </button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
+            
+              <form className="form-group needs-validation was-validated" noValidate>
                 <label htmlFor="">Reseña</label>
-                <textarea placeholder='Escribe la reseña de el equipo' style={{ maxHeight: 300 }} className='form-control' />
-              </div>
+                <textarea placeholder='Escribe la reseña de el equipo' required onChange={(e) => setResena(e.target.value)} style={{ maxHeight: 300 }} className='form-control' />
+              </form>
               <div className="container">
                 <div className="row justify-content-around">
                   <div className="col-auto">
@@ -273,6 +310,11 @@ export const Salida = () => {
           </div>
         </div>
       </div>
+
+
+      {
+        (IsLoading) &&<Indicators/>
+      }
 
 
     </div>
