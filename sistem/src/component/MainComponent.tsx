@@ -23,9 +23,10 @@ import { Mensajes } from './Mensajes';
 import { Message } from './Message';
 
 interface Messages {
-  idUser1: string
-  idUser2: string
+  userId: string
+  localId: string
   message: string
+  senderId: string
 }
 
 export const MainComponent = () => {
@@ -38,8 +39,16 @@ export const MainComponent = () => {
 
   const { login, state: { idLoca, idChat, idUser } } = useContext(context)
   const endPosition = () => {
-    const docs = document.getElementById('container-message')
-    docs!.scrollTop = docs!.scrollHeight - docs!.clientHeight
+
+
+
+    const contenedor = document.getElementById('container-message')
+    contenedor?.scrollTo({
+      top: contenedor.scrollHeight,
+      behavior: 'smooth'
+    })
+
+
   }
 
   useEffect(() => {
@@ -85,20 +94,26 @@ export const MainComponent = () => {
 
   useEffect(() => {
     const db = getFirestore(app)
-    const coll = collection(db, 'Messages')
+    const coll = collection(db, 'messages')
 
     const Q = query(coll, where('idChat', '==', idChat), orderBy('timestamp', 'asc'))
     onSnapshot(Q, (resp) => {
       const data: Messages[] = resp.docs.map(res => {
         return {
-          idUser1: res.get('idUser1'),
-          idUser2: res.get('idUser2'),
-          message: res.get('message')
+          userId: res.get('userId'),
+          localId: res.get('localId'),
+          message: res.get('message'),
+          senderId: res.get('senderId')
         }
       })
 
       setMessages(data)
-      endPosition()
+      setTimeout(() => {
+        endPosition()
+        }, 100);
+    
+      
+  
 
 
     })
@@ -155,18 +170,21 @@ export const MainComponent = () => {
   const createMessage = async () => {
     if (!message) return;
     const db = getFirestore(app)
-    const collMesasge = collection(db, 'Messages')
+    const collMesasge = collection(db, 'messages')
     addDoc(collMesasge, {
-      idUser1: localStorage.getItem('idLogin'),
-      idUser2: idUser,
+      localId: localStorage.getItem('idLogin'),
+      userId: idUser,
       timestamp: new Date().getTime(),
       message: message,
       idChat: idChat,
-      view: false,
+      senderId: localStorage.getItem('idLogin')
+
+    }).then((res)=>{
+      endPosition()
+      setMessage('')
     })
 
-    endPosition()
-    setMessage('')
+ 
 
 
 
@@ -185,9 +203,9 @@ export const MainComponent = () => {
   return (
     <BrowserRouter>
 
-      <div className='container-fluid  bg-main ' style={{minHeight:'100vh'}}>
+      <div className='container-fluid  bg-main ' style={{ minHeight: '100vh' }}>
         <div className="row  h-100 justify-content-between">
-          <div className="border-l  pt-5  col-lg-2 none  bg-main " style={{minHeight:'100vh'}} id='lateral'>
+          <div className="border-l  pt-5  col-lg-2 none  bg-main " style={{ minHeight: '100vh' }} id='lateral'>
             <div className="d-flex justify-content-between  ">
               <div className="logo ">
                 <img src={require('../img/logo.png')} alt="" />
@@ -270,7 +288,7 @@ export const MainComponent = () => {
           <div id='container-message' className="wrap-message">
             {
               Messages.map((item, index) => (
-                (item.idUser1 == localStorage.getItem('idLogin')) ? <Message location='right' messsage={item.message} /> : <Message key={index} location='left' messsage={item.message} />
+                (item.senderId == localStorage.getItem('idLogin')) ? <Message location='right' messsage={item.message} /> : <Message key={index} location='left' messsage={item.message} />
               ))
             }
           </div>

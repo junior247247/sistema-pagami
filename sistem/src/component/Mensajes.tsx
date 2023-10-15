@@ -9,8 +9,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import { Indicators } from './indicator/Indicators';
 
 interface Chat {
-  idUser1: string;
-  idUser2: string;
+  localId: string;
+  userId: string;
   idChat: string;
 }
 
@@ -28,25 +28,26 @@ export const Mensajes = () => {
     onChange('Mensajes')
   }, [])
 
-  /*useEffect(() => {
+  useEffect(() => {
      const db=getFirestore(app)
-     const coll=collection(db,'Chats')
-    // alert(localStorage.getItem('idLogin'))
-     
-     const Q=query(coll,where('ids','array-contains-any',[localStorage.getItem('idLogin')]),orderBy('timestamp','desc'))
+     const coll=collection(db,'chats') 
+     console.log(localStorage.getItem('idLogin'))    
+
+     //aLjhulxq0KP1Gm2ymF375g6ORgo2
+     const Q=query(coll,where('localId','==',localStorage.getItem('idLogin')),orderBy('timestamp','desc'))
      onSnapshot(Q,(resp)=>{
        const data:Chat[]=resp.docs.map(res=>{
          return{
-           idChat:res.id,
-           idUser1:res.get('idUser1'),
-           idUser2:res.get('idUser2')
+           idChat:res.get('idChat'),
+           userId:res.get('userId'),
+           localId:res.get('localId')
          }
      
        })
-       
+       console.log(data)
        setChats(data)
      })
-   }, [])*/
+   }, [])
 
 
 
@@ -86,7 +87,7 @@ export const Mensajes = () => {
 
             {
               Chats.map((item, index) => (
-                <RowChat onClick={() => { showChat(item.idChat, item.idUser1) }} key={index} idChat={item.idChat} idUser1={item.idUser1} idUser2={item.idUser2} />
+                <RowChat onClick={() => { showChat(item.idChat, item.userId) }} key={index} idChat={item.idChat} idUser1={item.userId} idUser2={item.localId} />
               ))
             }
 
