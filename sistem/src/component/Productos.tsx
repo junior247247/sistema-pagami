@@ -65,7 +65,7 @@ export const Productos = () => {
         const fi = files[0];
 
         const storage = getStorage();
-        const storageRef = ref(storage, `images/${'asd'}`);
+        const storageRef = ref(storage, `images/${new Date().getTime().toString()}`);
         const uploadTask = uploadBytesResumable(storageRef, fi);
 
         return new Promise((resolve, reject) => {

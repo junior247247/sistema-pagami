@@ -87,7 +87,7 @@ export const Mensajes = () => {
 
             {
               Chats.map((item, index) => (
-                <RowChat onClick={() => { showChat(item.idChat, item.userId) }} key={index} idChat={item.idChat} idUser1={item.userId} idUser2={item.localId} />
+                <RowChat onClick={() => { showChat(item.idChat, item.userId); }} key={index} idChat={item.idChat} idUser1={item.userId} idUser2={item.localId} />
               ))
             }
 

@@ -1,6 +1,7 @@
 import { collection, doc, getDoc, getFirestore, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useContext } from 'react'
 import { app } from '../Firebase/conexion';
+import { AppContext, context } from '../hooks/AppContext';
 
 
 interface Props {
@@ -12,37 +13,31 @@ interface Props {
 export const RowChat = ({ idChat, idUser1, idUser2, onClick }: Props) => {
     const [Name, setName] = useState('')
     const [Adress, setAdress] = useState('')
-    const [Count, setCount] = useState(0)
     const [lastMessage, setlastMessage] = useState('')
 
-
-    useEffect(() => {
-        const db = getFirestore(app)
-        const coll = collection(db, 'messages')
-        const snap = query(coll, where('idChat', '==', idChat), orderBy('timestamp', 'desc'), limit(1))
-        onSnapshot(snap, (resp => {
-            setlastMessage(resp.docs[0].get('message'))
-        }))
-    }, [])
+const {UserNameChat} = useContext(context)
 
 
     useEffect(() => {
         const db = getFirestore(app)
         const coll = collection(db, 'messages')
 
-        const snap = query(coll, where('idChat', '==', idChat), where('view', '==', false))
+        const snap = query(coll, where('idChat', '==', idChat), limit(1),orderBy('timestamp','desc'))
         onSnapshot(snap, (resp) => {
-            setCount(resp.size)
+            const messgan=resp.docs[0].get('message')
+            setlastMessage(messgan)
         })
 
     }, [])
 
     useEffect(() => {
         const db = getFirestore(app)
-        const coll = collection(db, 'Users')
+        const coll = collection(db, 'UsersStore')
+       
         const document = doc(coll, idUser1)
         getDoc(document).then(resp => {
             setName(resp.get('name'))
+            UserNameChat(resp.get('name'))
             setAdress(resp.get('adress'))
         })
     }, [])
@@ -52,7 +47,7 @@ export const RowChat = ({ idChat, idUser1, idUser2, onClick }: Props) => {
             <td className='text-mobile text-table' scope="row">{Name}</td>
 
             <td className='text-mobile text-table' scope="row">{Adress}</td>
-            <td className='text-mobile text-table' scope="row"> {(Count) && <span className='count pointer'>{Count} new</span>} {lastMessage.substring(0, 10) + '...'} </td>
+            <td className='text-mobile text-table' scope="row">{(lastMessage.length>=20)? lastMessage.substring(0,20)+'...':lastMessage} </td>
 
         </tr>
     )

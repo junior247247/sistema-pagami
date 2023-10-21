@@ -37,7 +37,7 @@ export const MainComponent = () => {
   const [message, setMessage] = useState('')
   const [Messages, setMessages] = useState<Messages[]>([])
 
-  const { login, state: { idLoca, idChat, idUser } } = useContext(context)
+  const { login, state: { idLoca, idChat, idUser,username } } = useContext(context)
   const endPosition = () => {
 
 
@@ -282,7 +282,7 @@ export const MainComponent = () => {
 
         <div id='chat-windows' className="chat-window">
           <div className="header-chat d-flex justify-content-between p-2">
-            <h6 className='text-white'>username</h6>
+            <h6 className='text-white'>{username}</h6>
             <img id='img-down' onClick={closeOrOpenChat} className='pointer' src={require('../img/down-icon.png')} width={20} height={20} />
           </div>
           <div id='container-message' className="wrap-message">
